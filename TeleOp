@@ -1,0 +1,63 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+@TeleOp
+public class Tele extends OpMode
+{
+    private double powerLX, powerLY, powerRX, powerRY;
+    private DcMotor FL, BL, FR, BR;
+
+    @Override
+    public void init()
+    {
+        BR = hardwareMap.get(DcMotor.class, "BR");
+        BL = hardwareMap.get(DcMotor.class, "BL");
+        FR = hardwareMap.get(DcMotor.class, "FR");
+        FL = hardwareMap.get(DcMotor.class, "FL");
+
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+        FL.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
+        BR.setPower(0);
+        BL.setPower(0);
+        FR.setPower(0);
+        FL.setPower(0);
+
+    }
+
+    @Override
+    public void loop()
+    {
+        powerLX = gamepad1.left_stick_x/2;
+        powerLY = gamepad1.left_stick_y/2;
+        powerRX = gamepad1.right_stick_x/2;
+        powerRY = gamepad1.right_stick_y/2;
+
+        if(powerLY > 0.03 || powerLY < -0.03)
+        {
+            FL.setPower(powerLY);
+            BL.setPower(powerLY);
+        } else
+        {
+            FL.setPower(0);
+            BL.setPower(0);
+        }
+
+        if(powerRY > 0.03 || powerRY < -0.03)
+        {
+            FR.setPower(powerRY);
+            BR.setPower(powerRY);
+        } else
+        {
+            FR.setPower(0);
+            BR.setPower(0);
+        }
+    }
+}
