@@ -59,5 +59,10 @@ public class Tele extends OpMode
             FR.setPower(0);
             BR.setPower(0);
         }
+
+        telemetry.addData("x", "%.2f", gamepad1.left_stick_x);
+        telemetry.addData("y", "%.2f", gamepad1.left_stick_y);
+        telemetry.update();
+
     }
 }
