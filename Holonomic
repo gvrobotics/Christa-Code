@@ -37,7 +37,7 @@ public class HoloOp_SS extends OpMode
         BR.setPower(0);
         BL.setPower(0);
         Arm.setPower(0);
-        Launcher.setPosition(0.5);
+        Launcher.setPosition(0);
     }
 
 
@@ -74,6 +74,9 @@ public class HoloOp_SS extends OpMode
             }
         }
 
+       
+        //intake/outake
+          
         //going up
         if (gamepad2.dpad_up)
         {
@@ -91,12 +94,23 @@ public class HoloOp_SS extends OpMode
         if(gamepad2.dpad_left){
             Arm.setPower(0.1);
         }
-        //stop TOTALLY
+        //stop TOTALLY / reset
         if(gamepad2.x){
             Arm.setPower(0);
         }
+        
+        //to make shoot launcher
+        if(gamepad2.a){
+            Launcher.setPosition(0.4);
+        }
+        
+        //reset launcher
+        if(gamepad2.y){
+            Launcher.setPosition(0);
+        }
 
-        //telemetry
+        
+        // telemetry
         telemetry.addData("powerRX: ", gamepad1.right_stick_x);
         telemetry.addData("powerRY: ", gamepad1.right_stick_y);
         telemetry.addData("powerLX: ", gamepad1.left_stick_x);
@@ -110,8 +124,8 @@ public class HoloOp_SS extends OpMode
         telemetry.addData("BL START: ", BL.getCurrentPosition());
 
         telemetry.addData("Arm: ", Arm.getPower());
+        telemetry.addData("Launcher: ", Launcher.getPosition());
         telemetry.update();
-
 
     }
 }
