@@ -68,16 +68,16 @@ public class Tele extends OpMode
         }
 
         if(gamepad1.right_bumper){
-            FL.setPower(-0.07);
-            BL.setPower(0.07);
-            FR.setPower(0.07);
-            BR.setPower(-0.07);
+            FL.setPower(-0.8);
+            BL.setPower(0.8);
+            FR.setPower(0.8);
+            BR.setPower(-0.8);
         }
         if(gamepad1.left_bumper){
-            FL.setPower(0.07);
-            BL.setPower(-0.07);
-            FR.setPower(-0.07);
-            BR.setPower(0.07);
+            FL.setPower(0.8);
+            BL.setPower(-0.8);
+            FR.setPower(-0.8);
+            BR.setPower(0.8);
         }
 
         //intake/outake
@@ -103,6 +103,7 @@ public class Tele extends OpMode
         if(gamepad2.x){
             Arm.setPower(0);
         }
+
 
         //to shoot launcher
         if(gamepad2.a){
