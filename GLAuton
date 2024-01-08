@@ -86,7 +86,18 @@ public class GLAuton extends LinearOpMode
         BL.setPower(0.35);
         FR.setPower(0.35);
         BR.setPower(0.35);
-        while(getRuntime() - timestamp < 3){
+        while(getRuntime() - timestamp < 2){
+
+        }
+        FL.setPower(0);
+        BL.setPower(0);
+        FR.setPower(0);
+        BR.setPower(0);
+
+        //move left
+        FR.setPower(0.35);
+        BL.setPower(0.35);
+        while(getRuntime() - timestamp < 0.4){
 
         }
         FL.setPower(0);
@@ -96,10 +107,8 @@ public class GLAuton extends LinearOpMode
 
 
 
-
-
-
     }
+
 
 
     private void forward(double inch,  double power)
@@ -225,7 +234,84 @@ public class GLAuton extends LinearOpMode
 
     }
 
+    private void right(double degree, double power) {
+        //Sets new position for motors
+        FL.setTargetPosition((int) (FL.getCurrentPosition() - (degree * cpd)));
+        FR.setTargetPosition((int) (FR.getCurrentPosition() + (degree * cpd)));
+        BL.setTargetPosition((int) (BL.getCurrentPosition() - (degree * cpd)));
+        BR.setTargetPosition((int) (BR.getCurrentPosition() + (degree * cpd)));
 
+        //Sets desired power for motors
+        FL.setPower(-power);
+        FR.setPower(power);
+        BL.setPower(-power);
+        FL.setPower(power);
+
+        //Makes the motors to run to the position
+        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Loop to run encoders method
+        while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy()) {
+
+        }
+
+        //Eliminates momentum
+        FL.setPower(0.1);
+        FR.setPower(-0.1);
+        BL.setPower(0.1);
+        BR.setPower(-0.1);
+        sleep(150);
+
+        //Stop motors
+        FL.setPower(0);
+        FR.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+    }
+
+    private void left(double degree, double power) {
+        //Sets new position for motors
+        FL.setTargetPosition((int) (FL.getCurrentPosition() + (degree * cpd)));
+        FR.setTargetPosition((int) (FR.getCurrentPosition() - (degree * cpd)));
+        BL.setTargetPosition((int) (BL.getCurrentPosition() + (degree * cpd)));
+        BR.setTargetPosition((int) (BR.getCurrentPosition() - (degree * cpd)));
+
+        //Sets desired power for motors
+        FL.setPower(power);
+        FR.setPower(-power);
+        BL.setPower(power);
+        FL.setPower(-power);
+
+        //Makes the motors to run to the position
+        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Loop to run encoders method
+        while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy()) {
+
+        }
+
+        //Eliminates momentum
+        FL.setPower(-0.1);
+        FR.setPower(0.1);
+        BL.setPower(-0.1);
+        BR.setPower(0.1);
+        sleep(150);
+
+        //Stop motors
+        FL.setPower(0);
+        FR.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+    }
+
+
+    /*
     private void movementRL(robotMotion action, double inch,  double power)
     {
 
@@ -353,7 +439,7 @@ public class GLAuton extends LinearOpMode
 
 
     }
-
+*/
     private void sleep(int sleep, double power)
     {
         BR.setPower(0);
