@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous
 public class Christa_Encoders extends LinearOpMode
 {
-    public DcMotor BR, BL, FR, FL, arm;
-    //public Servo claw;
+    public DcMotor BR, BL, FR, FL, Arm0, Arm1;
+    public Servo Launcher;
 
 
     //clicks per inch
@@ -20,7 +20,7 @@ public class Christa_Encoders extends LinearOpMode
     //goBilda motor encoder resolution or CPR : 145.6
     //diamater of wheels : 96 mm / 3.77953 inches
     //145.6 / (3.77953 * pi) = 12.262
-    double cpi = 7.7;
+    double cpi = 7.7; //18.78
 
     //clicks per inch for linear slides since different diameter than wheels and different motor
     //double lcpi = 68;
@@ -37,14 +37,24 @@ public class Christa_Encoders extends LinearOpMode
         BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
         FL = hardwareMap.get(DcMotor.class, "FL");
-        arm = hardwareMap.get(DcMotor.class, "A");
-        //claw = hardwareMap.get(Servo.class, "c");
+        Arm0 = hardwareMap.get(DcMotor.class, "Arm0");
+        Arm1 = hardwareMap.get(DcMotor.class, "Arm1");
+        Launcher = hardwareMap.get(Servo.class, "Launcher");
 
-        BR.setDirection(DcMotorSimple.Direction.REVERSE);
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
-        BL.setDirection(DcMotorSimple.Direction.FORWARD);
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
-        arm.setDirection(DcMotorSimple.Direction.REVERSE); //direction will needed to be changed later
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);
+        Arm0.setDirection(DcMotorSimple.Direction.REVERSE);
+        Arm1.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
+
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -58,24 +68,29 @@ public class Christa_Encoders extends LinearOpMode
         FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        /*
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+         */
 
         BR.setPower(0);
         FR.setPower(0);
         BL.setPower(0);
         FL.setPower(0);
-        arm.setPower(0);
+        Arm0.setPower(0);
+        Arm1.setPower(0);
 
         waitForStart();
 
         //Closing claw
         //claw.setPosition(0.45);
-
+        forward(2, 0.2);
         //Opening claw
         //claw.setPosition(0);
 
         //Forward 12 inches
+        /*
         forward(44, 0.4);
 
         //Backward 12 inches
@@ -92,14 +107,14 @@ public class Christa_Encoders extends LinearOpMode
 
         //Linear slides down 12 inches
         //lineardown(12,0.6);
-
+*/
         //Stops the robot for the rest of auton
         BR.setPower(0);
         FR.setPower(0);
         BL.setPower(0);
         FL.setPower(0);
-        arm.setPower(0);
-
+        Arm0.setPower(0);
+        Arm1.setPower(0);
     }
 
     private void forward(double inch,  double power)
