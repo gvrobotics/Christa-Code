@@ -95,9 +95,11 @@ public class GLAuton extends LinearOpMode
         BR.setPower(0);
 
         //move left
-        FR.setPower(0.35);
-        BL.setPower(0.35);
-        while(getRuntime() - timestamp < 0.4){
+        FR.setPower(0.45);
+        BL.setPower(0.45);
+        FL.setPower(-0.45);
+        BR.setPower(-0.45);
+        while(getRuntime() - timestamp < 1){
 
         }
         FL.setPower(0);
@@ -108,7 +110,6 @@ public class GLAuton extends LinearOpMode
 
 
     }
-
 
 
     private void forward(double inch,  double power)
