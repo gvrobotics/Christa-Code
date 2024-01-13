@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Tele extends OpMode
 {
     private double powerLX, powerLY, powerRX, powerRY;
-    private DcMotor FL, BL, FR, BR, Arm0, Arm1;
-    private Servo Launcher;
+    private DcMotor FL, BL, FR, BR, Arm0, Arm1, Rigging;
+    private Servo Launcher,Wrist;
 
     @Override
     public void init()
@@ -22,6 +22,9 @@ public class Tele extends OpMode
         FL = hardwareMap.get(DcMotor.class, "FL");
         Arm0 = hardwareMap.get(DcMotor.class, "Arm0");
         Arm1 = hardwareMap.get(DcMotor.class, "Arm1");
+        Rigging = hardwareMap.get(DcMotor.class, "Rigging");
+
+        //Wrist = hardwareMap.get(Servo.class, "Wrist");
         Launcher = hardwareMap.get(Servo.class, "Launcher");
 
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -30,8 +33,7 @@ public class Tele extends OpMode
         BL.setDirection(DcMotorSimple.Direction.FORWARD);
         Arm0.setDirection(DcMotorSimple.Direction.REVERSE);
         Arm1.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
+        Rigging.setDirection(DcMotorSimple.Direction.REVERSE);
 
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -45,7 +47,9 @@ public class Tele extends OpMode
         BL.setPower(0);
         Arm0.setPower(0);
         Arm1.setPower(0);
+        Rigging.setPower(0);
         Launcher.setPosition(0);
+       // Wrist.setPosition(0);
 
     }
 
@@ -77,6 +81,7 @@ public class Tele extends OpMode
             BR.setPower(0);
         }
 
+        //STRAFING
         if(gamepad1.right_bumper){
             FL.setPower(-0.85);
             BL.setPower(0.85);
@@ -90,18 +95,37 @@ public class Tele extends OpMode
             BR.setPower(0.85);
         }
 
-        //intake/outake
+        //INTAKE/OUTAKE
 
+        //5440 RIGGING
+        if (gamepad1.dpad_up)
+        {
+           Rigging.setPower(0.15);
+        }
+        if (gamepad1.dpad_down)
+        {
+            Rigging.setPower(-0.15);
+        }
+        if(gamepad1.dpad_left){
+            Rigging.setPower(0);
+        }
+        //max power
+        if(gamepad1.dpad_right){
+            Rigging.setPower(-0.8);
+        }
+
+
+        //ARM
         //going up
         if (gamepad2.dpad_up)
         {
-            Arm0.setPower(0.3);
-            Arm1.setPower(0.3);
+            Arm0.setPower(0.60);
+            Arm1.setPower(0.60);
         }
         //stopping when going up
         if(gamepad2.dpad_right) {
-            Arm0.setPower(-0.15);
-            Arm1.setPower(-0.15);
+            Arm0.setPower(-0.30);
+            Arm1.setPower(-0.30);
         }
         //going down
         if(gamepad2.dpad_down){
@@ -120,20 +144,27 @@ public class Tele extends OpMode
         }
 
 
-        //to shoot launcher
+        
+        //LAUNCHER
         if(gamepad2.a){
             Launcher.setPosition(0.4);
         }
-
         //reset launcher
         if(gamepad2.y){
             Launcher.setPosition(0);
         }
 
-        if(gamepad2.right_bumper){
-            Arm0.setPower(0.3);
-            Arm1.setPower(0.3);
+        
+        
+        //3795 WRIST
+        /*
+        if(gamepad2.left_bumper){
+            Wrist.setPosition(0.8);
         }
+        if(gamepad2.right_bumper){
+            Wrist.setPosition(0);
+        }
+       */
 
         // telemetry
         telemetry.addData("powerRX: ", gamepad1.right_stick_x);
