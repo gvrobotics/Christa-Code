@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Tele3795 extends OpMode
 {
     private double powerLX, powerLY, powerRX, powerRY;
-    private DcMotor FL, BL, FR, BR, Arm0, Arm1, Rigging;
+    private DcMotor FL, BL, FR, BR, Arm0, Arm1;
     private Servo Launcher,Wrist, Claw;
 
     @Override
@@ -22,7 +22,6 @@ public class Tele3795 extends OpMode
         FL = hardwareMap.get(DcMotor.class, "FL");
         Arm0 = hardwareMap.get(DcMotor.class, "Arm0");
         Arm1 = hardwareMap.get(DcMotor.class, "Arm1");
-        //Rigging = hardwareMap.get(DcMotor.class, "Rigging");
 
         Wrist = hardwareMap.get(Servo.class, "Wrist");
         Launcher = hardwareMap.get(Servo.class, "Launcher");
@@ -33,7 +32,9 @@ public class Tele3795 extends OpMode
         BL.setDirection(DcMotorSimple.Direction.FORWARD);
         Arm0.setDirection(DcMotorSimple.Direction.REVERSE);
         Arm1.setDirection(DcMotorSimple.Direction.FORWARD);
-        //Rigging.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
 
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -47,7 +48,6 @@ public class Tele3795 extends OpMode
         BL.setPower(0);
         Arm0.setPower(0);
         Arm1.setPower(0);
-        //Rigging.setPower(0);
         Launcher.setPosition(0);
         Wrist.setPosition(0);
         Claw.setPosition(0);
@@ -98,9 +98,13 @@ public class Tele3795 extends OpMode
 
         //INTAKE/OUTAKE
 
-        //3795 Rigging
-
-
+        //RIGGING
+        //max power down
+        if (gamepad2.dpad_right)
+        {
+            Arm0.setPower(-0.80);
+            Arm1.setPower(-0.80);
+        }
 
         //ARM
         //going up
@@ -109,27 +113,38 @@ public class Tele3795 extends OpMode
             Arm0.setPower(0.60);
             Arm1.setPower(0.60);
         }
+        /*
         //stopping when going up
         if(gamepad2.dpad_right) {
             Arm0.setPower(-0.30);
             Arm1.setPower(-0.30);
         }
+        */
+
         //going down
         if(gamepad2.dpad_down){
             Arm0.setPower(-0.2);
             Arm1.setPower(-0.2);
         }
+        /*
         //stop when going down
         if(gamepad2.dpad_left){
             Arm0.setPower(0.07);
             Arm1.setPower(0.07);
         }
+        */
+
         //stop TOTALLY / reset
         if(gamepad2.x){
             Arm0.setPower(0);
             Arm1.setPower(0);
         }
 
+        //to move it a little off the ground
+        if(gamepad2.dpad_left){
+            Arm0.setPower(0.1);
+            Arm1.setPower(0.1);
+        }
 
 
         //LAUNCHER
