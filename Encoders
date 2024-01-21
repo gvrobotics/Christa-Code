@@ -20,13 +20,15 @@ public class Christa_Encoders extends LinearOpMode
     //goBilda motor encoder resolution or CPR : 145.6
     //diamater of wheels : 96 mm / 3.77953 inches
     //145.6 / (3.77953 * pi) = 12.262
-    double cpi = 7.7; //18.78
+    double cpi = 12.2; //18.78
 
     //clicks per inch for linear slides since different diameter than wheels and different motor
     //double lcpi = 68;
 
     //clicks per degree
     double cpd = 4; //3.19444444444
+
+    int currentPos = 0;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -41,6 +43,7 @@ public class Christa_Encoders extends LinearOpMode
         Arm1 = hardwareMap.get(DcMotor.class, "Arm1");
         Launcher = hardwareMap.get(Servo.class, "Launcher");
 
+
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -48,6 +51,15 @@ public class Christa_Encoders extends LinearOpMode
         Arm0.setDirection(DcMotorSimple.Direction.REVERSE);
         Arm1.setDirection(DcMotorSimple.Direction.FORWARD);
 
+
+        /*
+        FR.setDirection(DcMotorSimple.Direction.FORWARD);
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        BR.setDirection(DcMotorSimple.Direction.FORWARD);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
+        Arm0.setDirection(DcMotorSimple.Direction.REVERSE);
+        Arm1.setDirection(DcMotorSimple.Direction.FORWARD);
+        */
 
 
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -85,7 +97,11 @@ public class Christa_Encoders extends LinearOpMode
 
         //Closing claw
         //claw.setPosition(0.45);
-        forward(2, 0.2);
+        forward(36, 0.05);
+        backward(36, 0.05);
+        left(45, 0.1);
+
+        //right(45, 0.1);
         //Opening claw
         //claw.setPosition(0);
 
@@ -143,15 +159,20 @@ public class Christa_Encoders extends LinearOpMode
         BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+
+
         //Loop to run encoders method
-        while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())
+        while (FR.isBusy() && FL.isBusy() && BR.isBusy() && BL.isBusy())
         {
             //Displays on the phone what the target position is vs the actual position
+            currentPos = FL.getCurrentPosition();
             telemetry.addLine("Move Forward");
             telemetry.addData("Target", "%7d :%7d : %7d : %7d", a, b, c, d);
             telemetry.addData("Actual", "%7d :%7d : %7d : %7d", FL.getCurrentPosition(), FR.getCurrentPosition(), BL.getCurrentPosition(), BR.getCurrentPosition());
             telemetry.update();
+            telemetry.log();
         }
+
 
         //Eliminates momentum
         FL.setPower(-0.1);
@@ -215,7 +236,7 @@ public class Christa_Encoders extends LinearOpMode
         BR.setPower(0);
     }
 
-    private void right(double degree, double power) {
+    private void left(double degree, double power) {
         //Sets new position for motors
         FL.setTargetPosition((int) (FL.getCurrentPosition() - (degree * cpd)));
         FR.setTargetPosition((int) (FR.getCurrentPosition() + (degree * cpd)));
@@ -253,7 +274,7 @@ public class Christa_Encoders extends LinearOpMode
         BR.setPower(0);
     }
 
-    private void left(double degree, double power) {
+    private void right(double degree, double power) {
         //Sets new position for motors
         FL.setTargetPosition((int) (FL.getCurrentPosition() + (degree * cpd)));
         FR.setTargetPosition((int) (FR.getCurrentPosition() - (degree * cpd)));
