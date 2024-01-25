@@ -152,9 +152,9 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        sleep(60);
-        forward(2, 0.2);
-        sleep(80);
+
+        forward(8, 0.2);
+
 
         //movementRL(robotMotion.right, 20, 0.2);
         if (opModeIsActive()) {
@@ -268,6 +268,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
 
+
         // calculate new position for (wheel) motors
         // make sure you cast to int!
         double diff1 = y - FL.getCurrentPosition();
@@ -278,11 +279,12 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         telemetry.addData("Diff2: ", diff2);
         telemetry.addData("Diff3: ", diff3);
         telemetry.addData("Diff4: ", diff4);
+        /*
         int a = (int) (FL.getCurrentPosition() + diff1);
         int b = (int)(FR.getCurrentPosition() + diff2);
         int c = (int)(BL.getCurrentPosition() + diff3);
         int d = (int)(BR.getCurrentPosition() + diff4);
-        
+
 
         // sets new position for motors
         FL.setTargetPosition(a);
@@ -332,7 +334,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         BL.setPower(0);
         BR.setPower(0);
 
-
+*/
 
     }   // end method telemetryTfod()
     private void forward(double inch,  double power)
