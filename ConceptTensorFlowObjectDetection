@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -10,8 +9,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 import java.util.List;
+
 
 @Autonomous(name = "Concept: TensorFlow Object Detection", group = "Concept")
 
@@ -30,11 +29,15 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
        "Pixel",
     };
 
+    // TEST THESE VALUES!!
     double cpi = 7; // cycles per inch
     double cpd = 3.7; // clicks per degree
 
     public DcMotor BR, BL, FR, FL;
 
+    double x, y;
+
+    boolean zone1, zone2, zone3 = false;
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
@@ -59,40 +62,33 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         FR = hardwareMap.get(DcMotor.class, "FR");
         FL = hardwareMap.get(DcMotor.class, "FL");
         //Arm = hardwareMap.get(DcMotor.class, "Arm");
-
-
-        // set direction
-//        BR.setDirection(DcMotorSimple.Direction.FORWARD);
-//        BL.setDirection(DcMotorSimple.Direction.REVERSE);
-//        FR.setDirection(DcMotorSimple.Direction.FORWARD);
-//        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        
 
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
         BL.setDirection(DcMotorSimple.Direction.FORWARD);
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
-
-        //Arm0.setDirection() (tbd)
-        //Arm1.setDirection()
-
-
+        
         // set mode
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
         
         // set initial power/position
@@ -110,13 +106,13 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
         telemetry.update();
+
         waitForStart();
 
-        sleep(60);
-        forward(2, 0.2);
-        sleep(80);
-
+        //distance needed to go for zone 2 to place pixel
+        forward(35, 0.2);
         //movementRL(robotMotion.right, 20, 0.2);
+        
         if (opModeIsActive()) {
             while (opModeIsActive()) {
 
@@ -179,7 +175,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
 
-        tfod.setZoom(1.75);
+        tfod.setZoom(2.5);
 
         // Choose a camera resolution. Not all cameras support all resolutions.
         //builder.setCameraResolution(new Size(640, 480));
@@ -219,14 +215,88 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+             x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+             y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
             telemetry.addData(""," ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
+        
+
+        if(currentRecognitions.size() >= 1) {
+            double diff1 = y - FL.getCurrentPosition();
+            double diff2 = y - FR.getCurrentPosition();
+            double diff3 = y - BL.getCurrentPosition();
+            double diff4 = y - BR.getCurrentPosition();
+            telemetry.addData("Diff1: ", diff1);
+            telemetry.addData("Diff2: ", diff2);
+            telemetry.addData("Diff3: ", diff3);
+            telemetry.addData("Diff4: ", diff4);
+            telemetry.addData("FL: ", FL.getCurrentPosition());
+            telemetry.addData("FR: ", FR.getCurrentPosition());
+            telemetry.addData("BL: ", BL.getCurrentPosition());
+            telemetry.addData("BR: ", BR.getCurrentPosition());
+
+            if(y>=250 && y<=270){
+                telemetry.addLine("Zone 2");
+                zone2 = true;
+            }
+            double g = 0;
+
+            int a = (int) ((FL.getCurrentPosition() + diff1)-g);
+            int b = (int) ((FR.getCurrentPosition() + diff2)-g);
+            int c = (int) ((BL.getCurrentPosition() + diff3)-g);
+            int d = (int) ((BR.getCurrentPosition() + diff4)-g);
+
+
+            // sets new position for motors
+            FL.setTargetPosition(a);
+            FR.setTargetPosition(b);
+            BL.setTargetPosition(c);
+            BR.setTargetPosition(d);
+
+
+            // sets desired power for motors
+            FL.setPower(0.2);
+            FR.setPower(0.2);
+            BL.setPower(0.2);
+            BR.setPower(0.2);
+
+            // sets motors to RUN_TO_POSITION
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+            //loop to run encoders method
+            while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy()) {
+                // TODO: Add telemetry data here
+                telemetry.addData("FL Target", a);
+                telemetry.addData("FL Actual", FL.getCurrentPosition());
+
+                telemetry.addData("FR Target", b);
+                telemetry.addData("FR Actual", FR.getCurrentPosition());
+
+                telemetry.addData("BL Target", c);
+                telemetry.addData("BL Actual", BL.getCurrentPosition());
+
+                telemetry.addData("BR Target", d);
+                telemetry.addData("BR Actual", BR.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+
+            // stop motors
+            FL.setPower(0);
+            FR.setPower(0);
+            BL.setPower(0);
+            BR.setPower(0);
+
+        }
 
     }   // end method telemetryTfod()
     private void forward(double inch,  double power)
@@ -387,7 +457,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             // loop to run encoders method
             while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())
             {
-                telemetry.addLine("turn right");
+                telemetry.addLine("turn left");
 
                 telemetry.update();
             }
@@ -428,7 +498,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             // loop to run encoders method
             while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())
             {
-                telemetry.addLine("turn left");
+                telemetry.addLine("turn right");
 
 
                 telemetry.update();
@@ -455,4 +525,4 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
 
 
-}   
+}   // end class
