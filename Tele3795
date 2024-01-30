@@ -13,6 +13,7 @@ public class Tele3795 extends OpMode
     private DcMotor FL, BL, FR, BR, Arm0, Arm1;
     private Servo Launcher,Wrist, Claw;
 
+
     @Override
     public void init()
     {
@@ -25,16 +26,15 @@ public class Tele3795 extends OpMode
 
         Wrist = hardwareMap.get(Servo.class, "Wrist");
         Launcher = hardwareMap.get(Servo.class, "Launcher");
+        Claw = hardwareMap.get(Servo.class, "Claw");
 
-        FR.setDirection(DcMotorSimple.Direction.REVERSE);
-        FL.setDirection(DcMotorSimple.Direction.FORWARD);
-        BR.setDirection(DcMotorSimple.Direction.REVERSE);
-        BL.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        FR.setDirection(DcMotorSimple.Direction.FORWARD);
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        BR.setDirection(DcMotorSimple.Direction.FORWARD);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
         Arm0.setDirection(DcMotorSimple.Direction.REVERSE);
         Arm1.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
-
 
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -49,7 +49,7 @@ public class Tele3795 extends OpMode
         Arm0.setPower(0);
         Arm1.setPower(0);
         Launcher.setPosition(0);
-        Wrist.setPosition(0);
+        Wrist.setPosition(0.3);
         Claw.setPosition(0);
 
     }
@@ -57,6 +57,9 @@ public class Tele3795 extends OpMode
     @Override
     public void loop()
     {
+
+        double clawPos = Claw.getPosition();
+
         powerLX = gamepad1.left_stick_x/2;
         powerLY = gamepad1.left_stick_y/2;
         powerRX = gamepad1.right_stick_x/2;
@@ -102,29 +105,29 @@ public class Tele3795 extends OpMode
         //max power down
         if (gamepad2.dpad_right)
         {
-            Arm0.setPower(-0.80);
-            Arm1.setPower(-0.80);
+            Arm0.setPower(-1);
+            Arm1.setPower(-1);
         }
 
         //ARM
         //going up
         if (gamepad2.dpad_up)
         {
-            Arm0.setPower(0.60);
-            Arm1.setPower(0.60);
+            Arm0.setPower(0.75);
+            Arm1.setPower(0.75);
         }
-        /*
+
         //stopping when going up
-        if(gamepad2.dpad_right) {
+        if(gamepad2.dpad_left) {
             Arm0.setPower(-0.30);
             Arm1.setPower(-0.30);
         }
-        */
+
 
         //going down
         if(gamepad2.dpad_down){
-            Arm0.setPower(-0.2);
-            Arm1.setPower(-0.2);
+            Arm0.setPower(-0.35);
+            Arm1.setPower(-0.35);
         }
         /*
         //stop when going down
@@ -141,15 +144,15 @@ public class Tele3795 extends OpMode
         }
 
         //to move it a little off the ground
-        if(gamepad2.dpad_left){
-            Arm0.setPower(0.1);
-            Arm1.setPower(0.1);
+        if(gamepad2.right_stick_button){
+            Arm0.setPower(0.4);
+            Arm1.setPower(0.4);
         }
 
 
         //LAUNCHER
         if(gamepad1.a){
-            Launcher.setPosition(0.4);
+            Launcher.setPosition(0.5);
         }
         //reset launcher
         if(gamepad1.y){
@@ -157,31 +160,32 @@ public class Tele3795 extends OpMode
         }
 
 
-
         //WRIST
 
         if(gamepad2.left_bumper){
-            Wrist.setPosition(0.8);
+            clawPos+=0.05;
+            Wrist.setPosition(clawPos);
         }
         if(gamepad2.right_bumper){
-            Wrist.setPosition(0);
+            clawPos-=0.05;
+            Wrist.setPosition(clawPos);
         }
 
         //CLAW
-        /*
+
         //close claw
         if(gamepad2.a){
             Claw.setPosition(0);
         }
         //open claw wide
         if(gamepad2.y){
-            Claw.setPosition(0.25);
+            Claw.setPosition(0.35);
         }
         //open claw slightly
-        if(gamepad2.y){
+        if(gamepad2.b){
             Claw.setPosition(0.03);
         }
-         */
+
 
         // telemetry
         telemetry.addData("powerRX: ", gamepad1.right_stick_x);
@@ -198,6 +202,7 @@ public class Tele3795 extends OpMode
         telemetry.addData("Arm0: ", Arm0.getPower());
         telemetry.addData("Arm0: ", Arm1.getPower());
         telemetry.addData("Launcher: ", Launcher.getPosition());
+        telemetry.addData("Launcher: ", Claw.getPosition());
         telemetry.update();
     }
 }
