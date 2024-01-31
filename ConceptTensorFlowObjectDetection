@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.robotcontroller.external.samples;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -9,6 +8,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import java.util.List;
 
 
@@ -26,7 +27,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/CenterStage.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-       "Pixel",
+            "Pixel",
     };
 
     // TEST THESE VALUES!!
@@ -34,6 +35,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     double cpd = 3.7; // clicks per degree
 
     public DcMotor BR, BL, FR, FL;
+    public Servo Wrist;
 
     double x, y;
 
@@ -61,6 +63,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
         FL = hardwareMap.get(DcMotor.class, "FL");
+        Wrist = hardwareMap.get(Servo.class, "Wrist");
         //Arm = hardwareMap.get(DcMotor.class, "Arm");
 
 
@@ -68,6 +71,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         BL.setDirection(DcMotorSimple.Direction.FORWARD);
         FR.setDirection(DcMotorSimple.Direction.REVERSE);
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
+
 
         // set mode
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -96,6 +100,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         FL.setPower(0);
         BR.setPower(0);
         BL.setPower(0);
+        Wrist.setPosition(0.3);
         // Arm0.setPower(0);
         // Arm1.setPower(0);
 
@@ -111,8 +116,9 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
         //distance needed to go for zone 2 to place pixel
         //forward(35, 0.2);
-        forward(25, 0.2);
-        //movementRL(robotMotion.right, 20, 0.2);
+        forward(10, 0.2);
+        sleep(1000);
+        movementRL(robotMotion.left, 40, 0.1);
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -148,23 +154,23 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
 
-            // With the following lines commented out, the default TfodProcessor Builder
-            // will load the default model for the season. To define a custom model to load, 
-            // choose one of the following:
-            //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
-            //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-            .setModelAssetName(TFOD_MODEL_ASSET)
-            //.setModelFileName(TFOD_MODEL_FILE)
+                // With the following lines commented out, the default TfodProcessor Builder
+                // will load the default model for the season. To define a custom model to load,
+                // choose one of the following:
+                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
+                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                //.setModelFileName(TFOD_MODEL_FILE)
 
-            // The following default settings are available to un-comment and edit as needed to 
-            // set parameters for custom models.
-            .setModelLabels(LABELS)
-            //.setIsModelTensorFlow2(true)
-            //.setIsModelQuantized(true)
-            //.setModelInputSize(300)
-            //.setModelAspectRatio(16.0 / 9.0)
+                // The following default settings are available to un-comment and edit as needed to
+                // set parameters for custom models.
+                .setModelLabels(LABELS)
+                //.setIsModelTensorFlow2(true)
+                //.setIsModelQuantized(true)
+                //.setModelInputSize(300)
+                //.setModelAspectRatio(16.0 / 9.0)
 
-            .build();
+                .build();
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -216,8 +222,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-             x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-             y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+            x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
 
             telemetry.addData(""," ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
@@ -231,6 +237,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             double diff2 = y - FR.getCurrentPosition();
             double diff3 = y - BL.getCurrentPosition();
             double diff4 = y - BR.getCurrentPosition();
+            /*
             telemetry.addData("Diff1: ", diff1);
             telemetry.addData("Diff2: ", diff2);
             telemetry.addData("Diff3: ", diff3);
@@ -239,20 +246,29 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             telemetry.addData("FR: ", FR.getCurrentPosition());
             telemetry.addData("BL: ", BL.getCurrentPosition());
             telemetry.addData("BR: ", BR.getCurrentPosition());
-
-            if(y>=290 && y<=360){
+*/
+            if(x>= 350 && x<=420){
+                telemetry.addLine("Zone 1");
+                zone1 = true;
+            }
+            else if(y>=290 && y<=360){
                 telemetry.addLine("Zone 2");
                 zone2 = true;
             }
 
             double g = 0;
 
-            int a = (int) ((FL.getCurrentPosition() + Math.abs(diff1)));
-            int b = (int) ((FR.getCurrentPosition() + Math.abs(diff2)));
-            int c = (int) ((BL.getCurrentPosition() + Math.abs(diff3)));
-            int d = (int) ((BR.getCurrentPosition() + Math.abs(diff4)));
+            /*
 
+             int a = (int) ((FL.getCurrentPosition() + 12));
+            int b = (int) ((FR.getCurrentPosition() + 12));
+            int c = (int) ((BL.getCurrentPosition() + 12));
+            int d = (int) ((BR.getCurrentPosition() + 12));
 
+            int a = (int) ((FL.getCurrentPosition() + Math.abs(diff1) + 7));
+            int b = (int) ((FR.getCurrentPosition() + Math.abs(diff2) + 7));
+            int c = (int) ((BL.getCurrentPosition() + Math.abs(diff3) + 7));
+            int d = (int) ((BR.getCurrentPosition() + Math.abs(diff4) + 7));
             // sets new position for motors
             FL.setTargetPosition(a);
             FR.setTargetPosition(b);
@@ -273,7 +289,6 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-            /*
             if(FL.getCurrentPosition() == y-7){
                 FL.setPower(0);
                 FR.setPower(0);
@@ -281,7 +296,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                 BR.setPower(0);
             }
 
-             */
+
+
             //loop to run encoders method
             while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy()) {
                 // TODO: Add telemetry data here
@@ -306,7 +322,66 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             FR.setPower(0);
             BL.setPower(0);
             BR.setPower(0);
+ */
 
+            int a = (int) ((FL.getCurrentPosition() + Math.abs(diff1)));
+            int b = (int) ((FR.getCurrentPosition() + Math.abs(diff2)));
+            int c = (int) ((BL.getCurrentPosition() + Math.abs(diff3)));
+            int d = (int) ((BR.getCurrentPosition() + Math.abs(diff4)));
+
+            // sets new position for motors
+            FL.setTargetPosition(a);
+            FR.setTargetPosition(b);
+            BL.setTargetPosition(c);
+            BR.setTargetPosition(d);
+
+
+            // sets desired power for motors
+            FL.setPower(0.3);
+            FR.setPower(0.3);
+            BL.setPower(0.3);
+            BR.setPower(0.3);
+
+            // sets motors to RUN_TO_POSITION
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+            if(FL.getCurrentPosition() == y-7){
+                FL.setPower(0);
+                FR.setPower(0);
+                BL.setPower(0);
+                BR.setPower(0);
+            }
+
+
+
+            //loop to run encoders method
+            while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy()) {
+                // TODO: Add telemetry data here
+                telemetry.addData("FL Target", a);
+                telemetry.addData("FL Actual", FL.getCurrentPosition());
+
+                telemetry.addData("FR Target", b);
+                telemetry.addData("FR Actual", FR.getCurrentPosition());
+
+                telemetry.addData("BL Target", c);
+                telemetry.addData("BL Actual", BL.getCurrentPosition());
+
+                telemetry.addData("BR Target", d);
+                telemetry.addData("BR Actual", BR.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+
+            // stop motors
+            FL.setPower(0);
+            FR.setPower(0);
+            BL.setPower(0);
+            BR.setPower(0);
         }
 
     }   // end method telemetryTfod()
