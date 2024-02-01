@@ -116,9 +116,9 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
         //distance needed to go for zone 2 to place pixel
         //forward(35, 0.2);
-        forward(10, 0.2);
+        forward(18, 0.2);
         sleep(1000);
-        movementRL(robotMotion.left, 40, 0.1);
+        movementRL(robotMotion.right, 40, 0.1);
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
