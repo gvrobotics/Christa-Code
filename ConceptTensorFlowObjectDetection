@@ -35,7 +35,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     double cpd = 3.7; // clicks per degree
 
     public DcMotor BR, BL, FR, FL;
-    public Servo Wrist;
+    public Servo Wrist, Claw;
 
     double x, y;
 
@@ -64,6 +64,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         FR = hardwareMap.get(DcMotor.class, "FR");
         FL = hardwareMap.get(DcMotor.class, "FL");
         Wrist = hardwareMap.get(Servo.class, "Wrist");
+        Claw = hardwareMap.get(Servo.class, "Claw");
+
         //Arm = hardwareMap.get(DcMotor.class, "Arm");
 
 
@@ -100,7 +102,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         FL.setPower(0);
         BR.setPower(0);
         BL.setPower(0);
-        Wrist.setPosition(0.3);
+        Wrist.setPosition(0.2);
         // Arm0.setPower(0);
         // Arm1.setPower(0);
 
@@ -114,11 +116,22 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
         waitForStart();
 
+        //code for zone 1
+
+        forward(18, 0.2);
+        sleep(1000);
+        //movementRL(robotMotion.left, 40, 0.1);
+
+
         //distance needed to go for zone 2 to place pixel
         //forward(35, 0.2);
+
+        //code for zone 3
+        /*
         forward(18, 0.2);
         sleep(1000);
         movementRL(robotMotion.right, 40, 0.1);
+*/
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -246,7 +259,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             telemetry.addData("FR: ", FR.getCurrentPosition());
             telemetry.addData("BL: ", BL.getCurrentPosition());
             telemetry.addData("BR: ", BR.getCurrentPosition());
-*/
+            */
             if(x>= 350 && x<=420){
                 telemetry.addLine("Zone 1");
                 zone1 = true;
@@ -256,7 +269,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                 zone2 = true;
             }
 
-            double g = 0;
+
 
             /*
 
@@ -348,6 +361,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+            Claw.setPosition(0.8);
+
 
             if(FL.getCurrentPosition() == y-7){
                 FL.setPower(0);
@@ -383,9 +398,90 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             BL.setPower(0);
             BR.setPower(0);
         }
+        else{
+            movementRL(robotMotion.right, 40, 0.1);
+            double diff1 = y - FL.getCurrentPosition();
+            double diff2 = y - FR.getCurrentPosition();
+            double diff3 = y - BL.getCurrentPosition();
+            double diff4 = y - BR.getCurrentPosition();
+
+            if(x>= 350 && x<=420){
+                telemetry.addLine("Zone 1");
+                zone1 = true;
+            }
+            else if(y>=290 && y<=360){
+                telemetry.addLine("Zone 2");
+                zone2 = true;
+            }
+
+
+
+            int a = (int) ((FL.getCurrentPosition() + Math.abs(diff1)));
+            int b = (int) ((FR.getCurrentPosition() + Math.abs(diff2)));
+            int c = (int) ((BL.getCurrentPosition() + Math.abs(diff3)));
+            int d = (int) ((BR.getCurrentPosition() + Math.abs(diff4)));
+
+            // sets new position for motors
+            FL.setTargetPosition(a);
+            FR.setTargetPosition(b);
+            BL.setTargetPosition(c);
+            BR.setTargetPosition(d);
+
+
+            // sets desired power for motors
+            FL.setPower(0.3);
+            FR.setPower(0.3);
+            BL.setPower(0.3);
+            BR.setPower(0.3);
+
+            // sets motors to RUN_TO_POSITION
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            Claw.setPosition(0.8);
+
+
+            if(FL.getCurrentPosition() == y-7){
+                FL.setPower(0);
+                FR.setPower(0);
+                BL.setPower(0);
+                BR.setPower(0);
+            }
+
+
+
+            //loop to run encoders method
+            while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy()) {
+                // TODO: Add telemetry data here
+                telemetry.addData("FL Target", a);
+                telemetry.addData("FL Actual", FL.getCurrentPosition());
+
+                telemetry.addData("FR Target", b);
+                telemetry.addData("FR Actual", FR.getCurrentPosition());
+
+                telemetry.addData("BL Target", c);
+                telemetry.addData("BL Actual", BL.getCurrentPosition());
+
+                telemetry.addData("BR Target", d);
+                telemetry.addData("BR Actual", BR.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+
+            // stop motors
+            FL.setPower(0);
+            FR.setPower(0);
+            BL.setPower(0);
+            BR.setPower(0);
+
+
+        }
 
     }   // end method telemetryTfod()
-    private void forward(double inch,  double power)
+    public void forward(double inch,  double power)
     {
         // calculate new position for (wheel) motors
         // make sure you cast to int!
@@ -450,7 +546,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     }
 
 
-    private void backward(double inch,  double power)
+    public void backward(double inch,  double power)
     {
         // calculate new position for motors
         int a = (int)(FL.getCurrentPosition() - (inch * cpi));
@@ -509,7 +605,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     }
 
 
-    private void movementRL(robotMotion action, double degree,  double power)
+    public void movementRL(robotMotion action, double degree,  double power)
     {
 
 
@@ -600,6 +696,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
 
     }
+
 
     private void sleep(int sleep, double power)
     {
