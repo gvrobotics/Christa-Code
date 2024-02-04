@@ -49,7 +49,7 @@ public class Tele3795 extends OpMode
         Arm0.setPower(0);
         Arm1.setPower(0);
         Launcher.setPosition(0);
-        Wrist.setPosition(0.3);
+        Wrist.setPosition(0);
         Claw.setPosition(0);
 
     }
@@ -113,21 +113,21 @@ public class Tele3795 extends OpMode
         //going up
         if (gamepad2.dpad_up)
         {
-            Arm0.setPower(0.65);
-            Arm1.setPower(0.65);
+            Arm0.setPower(0.58);
+            Arm1.setPower(0.58);
         }
 
         //stopping when going up
         if(gamepad2.dpad_left) {
-            Arm0.setPower(-0.30);
-            Arm1.setPower(-0.30);
+            Arm0.setPower(0.1);
+            Arm1.setPower(0.1);
         }
 
 
         //going down
         if(gamepad2.dpad_down){
-            Arm0.setPower(-0.35);
-            Arm1.setPower(-0.35);
+            Arm0.setPower(-0.15);
+            Arm1.setPower(-0.15);
         }
         /*
         //stop when going down
@@ -144,12 +144,17 @@ public class Tele3795 extends OpMode
         }
 
         //to move it a little off the ground
+        /*
         if(gamepad2.right_stick_button){
-            Arm0.setPower(0.4);
-            Arm1.setPower(0.4);
+            Arm0.setPower(0.62);
+            Arm1.setPower(0.62);
+            Wrist.setPosition(0.3);
+            Arm0.setPower(0);
+            Arm1.setPower(0);
+
         }
 
-
+*/
         //LAUNCHER
         if(gamepad1.a){
             Launcher.setPosition(0.5);
@@ -159,30 +164,29 @@ public class Tele3795 extends OpMode
             Launcher.setPosition(0);
         }
 
-
         //WRIST
 
         if(gamepad2.left_bumper){
-            Wrist.setPosition(0.3);
+            Wrist.setPosition(0.25);
         }
         if(gamepad2.right_bumper){
 
-            Wrist.setPosition(1);
+            Wrist.setPosition(0.95);
         }
 
         //CLAW
 
-        //close claw
-        if(gamepad2.a){
-            Claw.setPosition(0);
-        }
         //open claw wide
         if(gamepad2.y){
             Claw.setPosition(0.8);
         }
         //open claw slightly
         if(gamepad2.b){
-            Claw.setPosition(0.7);
+            Claw.setPosition(0.65);
+        }
+        //close claw
+        if(gamepad2.a){
+            Claw.setPosition(0);
         }
 
 
@@ -202,6 +206,8 @@ public class Tele3795 extends OpMode
         telemetry.addData("Arm0: ", Arm1.getPower());
         telemetry.addData("Launcher: ", Launcher.getPosition());
         telemetry.addData("Claw: ", Claw.getPosition());
+        telemetry.addData("Wrist: ", Wrist.getPosition());
+
         telemetry.update();
     }
 }
