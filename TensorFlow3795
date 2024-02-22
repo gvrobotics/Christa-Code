@@ -265,7 +265,7 @@ public class TensorFlow3795 extends LinearOpMode {
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
 
-        if(x>= 160 && x<=250 && y>=170 && y<=190){
+        if(x>= 160 && x<=260 && y>=150 && y<=190){
             telemetry.addLine("Middle SI");
             zone1 = true;
         }
@@ -279,14 +279,23 @@ public class TensorFlow3795 extends LinearOpMode {
         if(zone1==true){
             Wrist.setPosition(0.25);
             sleep(1000);
-            movementRL(robotMotion.left,45, 0.1);
-            sleep(1000);
+            //movementRL(robotMotion.left,45, 0.1);
+            //sleep(1000);
             forward(15,0.1);
             sleep(1000);
+
             Wrist.setPosition(0.85);
             sleep(1000);
-            Claw.setPosition(0.8);
+            Claw.setPosition(0.3);
             tfod.setZoom(1.85);
+        }
+        if(currentRecognitions.size()==0){
+            zone1=false;
+            zone2=false;
+            FR.setPower(0);
+            BR.setPower(0);
+            BL.setPower(0);
+            FL.setPower(0);
         }
         if(zone2==true){
             Wrist.setPosition(0.25);
@@ -295,7 +304,16 @@ public class TensorFlow3795 extends LinearOpMode {
             sleep(1000);
             Wrist.setPosition(0.85);
             sleep(1000);
-            Claw.setPosition(0.8);
+            Claw.setPosition(0.3);
+            zone2=false;
+        }
+        if(currentRecognitions.size()==0){
+            FR.setPower(0);
+            BR.setPower(0);
+            BL.setPower(0);
+            FL.setPower(0);
+            zone1=false;
+            zone2=false;
         }
 /*
         if(currentRecognitions.size() >= 1) {
