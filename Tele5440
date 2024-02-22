@@ -34,7 +34,7 @@ public class Tele5440 extends OpMode
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
         BR.setDirection(DcMotorSimple.Direction.REVERSE);
         BL.setDirection(DcMotorSimple.Direction.FORWARD);
-        Arm0.setDirection(DcMotorSimple.Direction.REVERSE);
+        Arm0.setDirection(DcMotorSimple.Direction.REVERSE); // REVERSED
         Arm1.setDirection(DcMotorSimple.Direction.REVERSE);
         Rigging1.setDirection(DcMotorSimple.Direction.REVERSE);
         Rigging2.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -56,9 +56,9 @@ public class Tele5440 extends OpMode
         Arm1.setPower(0);
         Rigging1.setPower(0);
         Rigging2.setPower(0);
-        Wrist.setPosition(0);
+        Wrist.setPosition(0.3);
         Launcher.setPosition(0);
-        Claw.setPosition(0);
+        Claw.setPosition(0.2);
 
 
     }
@@ -72,10 +72,11 @@ public class Tele5440 extends OpMode
         powerRY = gamepad1.right_stick_y/2;
 
         //TANK DRIVE
+        // CHANGED WHEELS TO NEGATIVE POWER
         if(powerLY > 0.05 || powerLY < -0.05)
         {
-            FL.setPower(powerLY);
-            BL.setPower(powerLY);
+            FL.setPower(-powerLY);
+            BL.setPower(-powerLY);
         } else
         {
             FL.setPower(0);
@@ -84,8 +85,8 @@ public class Tele5440 extends OpMode
 
         if(powerRY > 0.05 || powerRY < -0.05)
         {
-            FR.setPower(powerRY);
-            BR.setPower(powerRY);
+            FR.setPower(-powerRY);
+            BR.setPower(-powerRY);
         } else
         {
             FR.setPower(0);
@@ -110,8 +111,8 @@ public class Tele5440 extends OpMode
         //5440 RIGGING
         if (gamepad2.dpad_up)
         {
-           Rigging1.setPower(0.4);
-           Rigging2.setPower(0.4);
+            Rigging1.setPower(0.4);
+            Rigging2.setPower(0.4);
         }
         if (gamepad2.dpad_down)
         {
@@ -154,11 +155,11 @@ public class Tele5440 extends OpMode
         */
 
         if(gamepad2.right_stick_button){
-            Arm0.setPower(0.85);
+            Arm0.setPower(-0.85);
             Arm1.setPower(0.85);
         }
         if(gamepad2.left_stick_button){
-            Arm0.setPower(-0.2);
+            Arm0.setPower(0.2);
             Arm1.setPower(-0.2);
         }
 
@@ -166,6 +167,7 @@ public class Tele5440 extends OpMode
         if(gamepad2.x){
             Arm0.setPower(0);
             Arm1.setPower(0);
+
         }
 
 
@@ -197,12 +199,14 @@ public class Tele5440 extends OpMode
         }
         //open claw wide
         if(gamepad2.y){
-            Claw.setPosition(0.5);
+            Claw.setPosition(0.3);
         }
+
+        // CHANGED POSITION FROM 0.4 to 0.1
         //open claw slightly
-        if(gamepad2.b){
-            Claw.setPosition(0.4);
-        }
+        /*if(gamepad2.b){
+            Claw.setPosition(0.);
+        }*/
 
         // telemetry
         telemetry.addData("powerRX: ", gamepad1.right_stick_x);
