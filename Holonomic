@@ -3,17 +3,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
-public class HoloOp_SS extends OpMode
+public class SeniorTeamTele extends OpMode
 {
-    public DcMotor FR, FL, BR, BL, Arm;
-    public Servo Launcher;
-    private double powerRY, powerRX, powerLX, powerLY, robotAngle, magnitude;
-
-
+    public DcMotor FR, FL, BR, BL;
+    private double powerRY, powerRX, powerLX, powerLY, robotAngle, PowerMultiplier, lf, rb, rf, lb;
 
     @Override
     public void init()
@@ -22,113 +17,56 @@ public class HoloOp_SS extends OpMode
         FL = hardwareMap.get(DcMotor.class, "FL");
         BR = hardwareMap.get(DcMotor.class, "BR");
         BL = hardwareMap.get(DcMotor.class, "BL");
-        Arm = hardwareMap.get(DcMotor.class, "Arm");
-        Launcher = hardwareMap.get(Servo.class, "Launcher");
 
-        FR.setDirection(DcMotorSimple.Direction.REVERSE);
-        FL.setDirection(DcMotorSimple.Direction.FORWARD);
-        BR.setDirection(DcMotorSimple.Direction.REVERSE);
-        BL.setDirection(DcMotorSimple.Direction.FORWARD);
-        Arm.setDirection(DcMotorSimple.Direction.REVERSE);
+        BR.setDirection(DcMotorSimple.Direction.FORWARD);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
+        FR.setDirection(DcMotorSimple.Direction.FORWARD);
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         FR.setPower(0);
         FL.setPower(0);
         BR.setPower(0);
         BL.setPower(0);
-        Arm.setPower(0);
-        Launcher.setPosition(0);
     }
-
 
     @Override
     public void loop()
     {
-        // assign powers to joysticks
-        powerLX = gamepad1.left_stick_x;
-        powerLY = gamepad1.left_stick_y;
-        powerRX = gamepad1.right_stick_x;
-        powerRY = gamepad1.right_stick_y;
+        powerLX = gamepad1.left_stick_x/2;
+        powerLY = gamepad1.left_stick_y/2;
+        powerRX = gamepad1.right_stick_x/2;
+        powerRY = gamepad1.right_stick_y/2;
 
-        // calculate angle with atan2
-        // use atan2 bc it returns a value -pi to pi
-        robotAngle = Math.atan2(powerLY, powerLX);
-
-        // magnitude (distance formula)
-        magnitude = Math.sqrt(Math.pow(powerLX, 2) + Math.pow(powerLY, 2))/2;
-
-        // set power, FR and BL negative
-        FR.setPower((robotAngle - (Math.PI)/4)*magnitude);
-        FL.setPower((robotAngle + (Math.PI)/4)*magnitude);
-        BR.setPower((robotAngle + (Math.PI)/4)*magnitude);
-        BL.setPower((robotAngle - (Math.PI)/4)*magnitude);
-
-        // adjust power if right stick is not moving, set all motors to powerRX
-        if (magnitude < 0.1) {
-            if (powerRY > -0.03 && powerRY < 0.03) {
-                FR.setPower(powerRX);
-                FL.setPower(-powerRX);
-                BR.setPower(powerRX);
-                BL.setPower(-powerRX);
-
-            }
-        }
-
-
-        //intake/outake
-
-        //going up
-        if (gamepad2.dpad_up)
-        {
-           Arm.setPower(0.4);
-        }
-        //stopping when going up
-        if(gamepad2.dpad_right) {
-            Arm.setPower(-0.1);
-        }
-        //going down
-        if(gamepad2.dpad_down){
-            Arm.setPower(-0.3);
-        }
-        //stop when going down
-        if(gamepad2.dpad_left){
-            Arm.setPower(0.07);
-        }
-        //stop TOTALLY / reset
-        if(gamepad2.x){
-            Arm.setPower(0);
-        }
-
-        //to shoot launcher
-        if(gamepad2.a){
-            Launcher.setPosition(0.4);
-        }
-
-        //reset launcher
-        if(gamepad2.y){
-            Launcher.setPosition(0);
-        }
-
-        if(gamepad2.right_bumper){
-            Arm.setPower(0.3);
-        }
-
-        // telemetry
+        robotAngle = Math.atan2(powerLX, powerLY);
+        telemetry.addData("Robot angle:", robotAngle);
         telemetry.addData("powerRX: ", gamepad1.right_stick_x);
         telemetry.addData("powerRY: ", gamepad1.right_stick_y);
         telemetry.addData("powerLX: ", gamepad1.left_stick_x);
         telemetry.addData("powerLY: ", gamepad1.left_stick_y);
-        telemetry.addData("robotAngle: ", robotAngle);
-        telemetry.addData("Magnitude: ", magnitude);
 
-        telemetry.addData("FR START: ", FR.getCurrentPosition());
-        telemetry.addData("FL START: ", FL.getCurrentPosition());
-        telemetry.addData("BR START: ", BR.getCurrentPosition());
-        telemetry.addData("BL START: ", BL.getCurrentPosition());
-
-        telemetry.addData("Arm: ", Arm.getPower());
-        telemetry.addData("Launcher: ", Launcher.getPosition());
+        telemetry.addData("FR: ", FR.getPower());
+        telemetry.addData("FL: ", FL.getPower());
+        telemetry.addData("BR: ", BR.getPower());
+        telemetry.addData("BL: ", BL.getPower());
         telemetry.update();
+
+
+        PowerMultiplier = Math.sqrt((Math.pow(powerLX, 2) + Math.pow(powerLY, 2)));
+
+        lf = (PowerMultiplier*-1*(Math.sin(robotAngle-(Math.PI/4)))) - powerRX;
+        rb = (PowerMultiplier*-1*(Math.sin(robotAngle-(Math.PI/4)))) + powerRX;
+        lb = (PowerMultiplier*Math.sin(robotAngle+(Math.PI/4))) - powerRX;
+        rf = (PowerMultiplier*Math.sin(robotAngle+(Math.PI/4))) + powerRX;
+
+        FR.setPower(rf);
+        FL.setPower(lf);
+        BR.setPower(rb);
+        BL.setPower(lb);
 
     }
 }
