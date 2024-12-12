@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 public class SeniorTeamTele extends OpMode
 {
     public DcMotor FR, FL, BR, BL, Slides1, Slides2;
-    public Servo Elbow1, Elbow2;
-    public Servo TopWrist, EWrist1, Wrist;
+    public Servo Elbow1, Elbow2, SClaw;
+    public Servo EWrist1, Wrist;
     public CRServo Roller;
     private double powerRY, powerRX, powerLX, powerLY, robotAngle, PowerMultiplier, lf, rb, rf, lb;
 
@@ -29,9 +29,11 @@ public class SeniorTeamTele extends OpMode
         Elbow1 = hardwareMap.get(Servo.class, "Elbow1");
         Elbow2 = hardwareMap.get(Servo.class, "Elbow2");
         Roller = hardwareMap.get(CRServo.class, "Roller");
-        TopWrist = hardwareMap.get(Servo.class, "TopWrist");
+        //TopWrist = hardwareMap.get(Servo.class, "TopWrist");
         // EWrist1 = hardwareMap.get(Servo.class, "EWrist1");
         Wrist = hardwareMap.get(Servo.class, "Wrist");
+        SClaw = hardwareMap.get(Servo.class, "SClaw");
+
 
         BR.setDirection(DcMotorSimple.Direction.FORWARD);
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -39,11 +41,23 @@ public class SeniorTeamTele extends OpMode
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
+
+        /*
+
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+
+         */
+
         Slides1.setDirection(DcMotorSimple.Direction.FORWARD);
         Slides2.setDirection(DcMotorSimple.Direction.FORWARD);
+        SClaw.setDirection(Servo.Direction.REVERSE);
+
 
         //test, may remove
-        TopWrist.setDirection(Servo.Direction.REVERSE);
+        //TopWrist.setDirection(Servo.Direction.REVERSE);
 
 
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -60,9 +74,10 @@ public class SeniorTeamTele extends OpMode
         //EWrist1.setPosition(0.7);
         Wrist.setPosition(0);
         Roller.setPower(0);
-        TopWrist.setPosition(-1);
+        //TopWrist.setPosition(-1);
         Elbow1.setPosition(1);
         Elbow2.setPosition(0);
+        SClaw.setPosition(0.9);
 
         //elbow1 and elbow2 are continous servos
         //left servo is 0 and right servo is -0.5
@@ -135,6 +150,7 @@ public class SeniorTeamTele extends OpMode
             Slides2.setPower(0.3);
         } */
 
+        /*
         if(gamepad2.b){
             TopWrist.setPosition(TopWrist.getPosition() + 0.08);
         }
@@ -153,6 +169,12 @@ public class SeniorTeamTele extends OpMode
       }
 
  */
+        if(gamepad2.b){
+            SClaw.setPosition(0.5);
+        }
+        if(gamepad2.x){
+            SClaw.setPosition(0.9);
+        }
 
         if (gamepad2.left_trigger > 0.5)
         {
@@ -199,6 +221,10 @@ public class SeniorTeamTele extends OpMode
         telemetry.addData("FL: ", FL.getPower());
         telemetry.addData("BR: ", BR.getPower());
         telemetry.addData("BL: ", BL.getPower());
+        telemetry.addData("FR Position: ", FR.getCurrentPosition());
+        telemetry.addData("FL Position: ", FL.getCurrentPosition());
+        telemetry.addData("BR Position: ", BR.getCurrentPosition());
+        telemetry.addData("BL Position: ", BL.getCurrentPosition());
         telemetry.addData("Roller: ", Roller.getPower());
 
         telemetry.addData("Slides1: ", Slides1.getPower());
@@ -209,15 +235,12 @@ public class SeniorTeamTele extends OpMode
         telemetry.addData("Elbow2: ", Elbow2.getPosition());
         // telemetry.addData("EWrist1: ", EWrist1.getPosition());
         telemetry.addData("Wrist: ", Wrist.getPosition());
-        telemetry.addData("TopWrist: ", TopWrist.getPosition());
-        telemetry.addData("TopWrist: ", TopWrist.getDirection());
-
-
+        telemetry.addData("Wrist: ", SClaw.getPosition());
+        //telemetry.addData("TopWrist: ", TopWrist.getPosition());
+        //telemetry.addData("TopWrist: ", TopWrist.getDirection());
 
 
         telemetry.update();
-
-
 
 
 
