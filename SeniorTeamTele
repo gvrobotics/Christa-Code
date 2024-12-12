@@ -77,7 +77,7 @@ public class SeniorTeamTele extends OpMode
         //TopWrist.setPosition(-1);
         Elbow1.setPosition(1);
         Elbow2.setPosition(0);
-        SClaw.setPosition(0.9);
+        SClaw.setPosition(0.6);
 
         //elbow1 and elbow2 are continous servos
         //left servo is 0 and right servo is -0.5
@@ -170,10 +170,10 @@ public class SeniorTeamTele extends OpMode
 
  */
         if(gamepad2.b){
-            SClaw.setPosition(0.5);
+            SClaw.setPosition(0);
         }
         if(gamepad2.x){
-            SClaw.setPosition(0.9);
+            SClaw.setPosition(0.6);
         }
 
         if (gamepad2.left_trigger > 0.5)
