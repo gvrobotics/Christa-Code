@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import java.lang.Math;
 
 @Autonomous
 
@@ -13,39 +14,55 @@ public class AutonTest extends LinearOpMode {
     public DcMotor FR, FL, BR, BL, Slides1, Slides2;
     private double powerRY, powerRX, powerLX, powerLY, robotAngle, PowerMultiplier, lf, rb, rf, lb;
     public CRServo Roller;
-    public Servo Elbow1, Elbow2, EWrist1, Wrist, TopWrist;
+    public Servo Elbow1, Elbow2, EWrist1, Wrist, TopWrist, SClaw;
 
     //CPI is calculated by ((Clicks of Encoders per revolution)/(diameter*pi)
     //Clicks of Encoders per revolution may change based off of different model types
 
     // TEST THESE VALUES!!
 //    double cpi = 7; // cycles per inch
-    double cpi = 40; // cpi is being tested!!
-    double cpd = 3.7; // clicks per degree
-    double acpi = 10; // cpi for arm- verify number
+    double cpi = 20; // cpi is being tested!!
+    double cpd = 7; // clicks per degree
+    //double acpi = 10; // cpi for arm- verify number
 
     public enum robotMotion
     {
-        right, left;
+        right, left, linearup, lineardown;
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         // hardware map
-        // hardware map
-        BR = hardwareMap.get(DcMotor.class, "BR");
-        BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
         FL = hardwareMap.get(DcMotor.class, "FL");
-        //Arm = hardwareMap.get(DcMotor.class, "Arm");
+        BR = hardwareMap.get(DcMotor.class, "BR");
+        BL = hardwareMap.get(DcMotor.class, "BL");
+        Slides1 = hardwareMap.get(DcMotor.class, "Slides1");
+        Slides2 = hardwareMap.get(DcMotor.class, "Slides2");
+        Elbow1 = hardwareMap.get(Servo.class, "Elbow1");
+        Elbow2 = hardwareMap.get(Servo.class, "Elbow2");
+        Roller = hardwareMap.get(CRServo.class, "Roller");
+        //TopWrist = hardwareMap.get(Servo.class, "TopWrist");
+        // EWrist1 = hardwareMap.get(Servo.class, "EWrist1");
+        Wrist = hardwareMap.get(Servo.class, "Wrist");
+        SClaw = hardwareMap.get(Servo.class, "SClaw");
 
-
-        // set direction - do not change
+        /*
         BR.setDirection(DcMotorSimple.Direction.FORWARD);
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
         FR.setDirection(DcMotorSimple.Direction.FORWARD);
         FL.setDirection(DcMotorSimple.Direction.FORWARD);
+
+         */
+        BR.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.FORWARD);
+        FR.setDirection(DcMotorSimple.Direction.REVERSE);
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        Slides1.setDirection(DcMotorSimple.Direction.FORWARD);
+        Slides2.setDirection(DcMotorSimple.Direction.FORWARD);
+        SClaw.setDirection(Servo.Direction.REVERSE);
 
         // set mode
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -65,39 +82,49 @@ public class AutonTest extends LinearOpMode {
         FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        Slides1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Slides1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Slides2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Slides2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         // set initial power/position
-        BR.setPower(0);
-        BL.setPower(0);
         FR.setPower(0);
         FL.setPower(0);
-
+        BR.setPower(0);
+        BL.setPower(0);
+        Slides1.setPower(0);
+        Slides2.setPower(0);
+        //EWrist1.setPosition(0.7);
+        Wrist.setPosition(0.3);
+        Roller.setPower(0);
+        //TopWrist.setPosition(-1);
+        Elbow1.setPosition(1);
+        Elbow2.setPosition(0);
+        SClaw.setPosition(0.6);
 
         //motor powers:
-
-        //forward/backward: 0.6
+        //forward/backward: 0.5
+        //strafe: 0.5
         //right/left: 0.3
-        //strafe: 0.6
 
         waitForStart();
-
-        forward(5,0.3);
+        //TODO: Code Here!
+        backward(23, 0.1);
         sleep(1000);
-/*
-        strafeLeft(5, 0.3);
-
+        //forward(23,0.1);
+        /*
         sleep(1000);
-
-        strafeRight(5, 0.3);
-
+        linearup(36, 0.3);
+        sleep(500);
+        lineardown(4,0.3);
+        SClaw.setPosition(0);
         sleep(1000);
+        backward(23,0.1);
+        //movementRL(robotMotion.left, 45,0.1);
+        /*
 
-        forward(5, 0.5);
 
-        sleep(1000);
-
-        backward(5, 0.5);
-        */
-
+         */
     }
 
     private void forward(double inch,  double power) {
@@ -156,10 +183,10 @@ public class AutonTest extends LinearOpMode {
         int d = (int)(FL.getCurrentPosition() - (inch * cpi));
 
         // sets new position for motors
-        BR.setTargetPosition(-a);
-        BL.setTargetPosition(-b);
-        FL.setTargetPosition(-c);
-        FR.setTargetPosition(-d);
+        BR.setTargetPosition(a);
+        BL.setTargetPosition(b);
+        FR.setTargetPosition(c);
+        FL.setTargetPosition(d);
 
         // sets desired power for motors
         BR.setPower(power);
@@ -365,5 +392,50 @@ public class AutonTest extends LinearOpMode {
             FR.setPower(0);
             FL.setPower(0);
         }
+
     }
+    private void linearup(double inch, double power)
+    {
+        int a = (int) (Slides1.getCurrentPosition() - (inch*cpi));
+        int b = (int) (Slides2.getCurrentPosition() + (inch*cpi));
+        Slides1.setTargetPosition(a);
+        Slides2.setTargetPosition(b);
+        Slides1.setPower(power);
+        Slides2.setPower(power);
+        Slides1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Slides2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (Slides2.isBusy())
+        {
+            telemetry.addLine("Linear up");
+            telemetry.addData("Target Slides1", "%7d", a);
+            telemetry.addData("Target Slides2", "%7d", b);
+            telemetry.addData("Actual Slides1", "%7d", Slides1.getCurrentPosition());
+            telemetry.addData("Actual Slides2", "%7d", Slides2.getCurrentPosition());
+            telemetry.update();
+        }
+        //Slides1.setPower(0);
+        //Slides2.setPower(0);
+    }
+    private void lineardown(double inch, double power)
+    {
+        int a = (int) (Slides1.getCurrentPosition() + (inch * cpi));
+        int b = (int) (Slides2.getCurrentPosition() - (inch * cpi));
+        Slides1.setTargetPosition(a);
+        Slides2.setTargetPosition(b);
+        Slides1.setPower(power);
+        Slides2.setPower(power);
+        Slides1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Slides2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (Slides1.isBusy() && Slides2.isBusy()) {
+            telemetry.addLine("Linear down");
+            telemetry.addData("Target", "%7d", a);
+            telemetry.addData("Target", "%7d", b);
+            telemetry.addData("Actual", "%7d", Slides1.getCurrentPosition());
+            telemetry.addData("Actual", "%7d", Slides2.getCurrentPosition());
+            telemetry.update();
+        }
+        Slides1.setPower(0);
+        Slides2.setPower(0);
+    }
+
 }   // end class
