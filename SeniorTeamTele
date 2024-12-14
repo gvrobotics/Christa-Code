@@ -14,8 +14,10 @@ public class SeniorTeamTele extends OpMode
     public Servo EWrist1, Wrist;
     public CRServo Roller;
     private double powerRY, powerRX, powerLX, powerLY, robotAngle, PowerMultiplier, lf, rb, rf, lb;
+    double cpi = 50;
 
     double cpd = 3.7;
+    int inch = 0;
 
     @Override
     public void init()
@@ -65,6 +67,13 @@ public class SeniorTeamTele extends OpMode
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        Slides1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Slides1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Slides2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Slides2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+
         FR.setPower(0);
         FL.setPower(0);
         BR.setPower(0);
@@ -72,7 +81,7 @@ public class SeniorTeamTele extends OpMode
         Slides1.setPower(0);
         Slides2.setPower(0);
         //EWrist1.setPosition(0.7);
-        Wrist.setPosition(0);
+        Wrist.setPosition(0.3);
         Roller.setPower(0);
         //TopWrist.setPosition(-1);
         Elbow1.setPosition(1);
@@ -137,12 +146,14 @@ public class SeniorTeamTele extends OpMode
 
         }
         if(gamepad2.dpad_left){
+            Wrist.setPosition(0.35);
             Elbow1.setPosition(1);
             Elbow2.setPosition(0);
         }
         if(gamepad2.dpad_right){
-            Elbow1.setPosition(0);
-            Elbow2.setPosition(1);
+            Elbow1.setPosition(0.7);
+            Elbow2.setPosition(0.3);
+            Wrist.setPosition(1);
         }
 
       /*  if(gamepad2.dpad_up){
@@ -190,6 +201,10 @@ public class SeniorTeamTele extends OpMode
         }
 
 
+        if(gamepad2.left_bumper){
+            Slides1.setPower(0);
+            Slides2.setPower(0);
+        }
         if(gamepad1.left_bumper){
             Slides1.setPower(0);
             Slides2.setPower(0);
@@ -198,6 +213,8 @@ public class SeniorTeamTele extends OpMode
 //            Slides1.setPower(0.9);
 //            Slides2.setPower(0.9);
 //        }
+
+        /*
 
         if(gamepad2.dpad_down){
             Slides1.setPower(-0.55);
@@ -208,6 +225,43 @@ public class SeniorTeamTele extends OpMode
             Slides1.setPower(0.55);
             Slides2.setPower(-0.55);
         }
+
+        if (gamepad2.dpad_down && inch != 0) {
+            lineardown(inch, 0.3);
+            linearup(0.075, 0.3);
+            inch = 0;
+        } else if (gamepad2.dpad_up && inch == 0) {
+            linearup(5, 0.3);
+            inch = 5;
+        } else if (gamepad2.dpad_up && inch > 5) {
+            lineardown(inch - 5, 0.3);
+            inch = 5;
+        }
+
+*/
+
+        if (gamepad2.dpad_up) {
+            linearup(43, 0.3);
+        }
+
+
+        if (gamepad1.x) {
+            SClaw.setPosition(0.6);
+            linearup(4, 0.3);
+            //delay
+            lineardown(4,-0.3);
+
+        }
+
+
+        if (gamepad2.dpad_down) {
+            lineardown(4, -0.3);
+            SClaw.setPosition(0);
+            lineardown(36,-0.3);
+            Slides1.setPower(0);
+            Slides2.setPower(0);
+        }
+
 
 
         telemetry.addData("Robot angle:", robotAngle);
@@ -229,6 +283,9 @@ public class SeniorTeamTele extends OpMode
 
         telemetry.addData("Slides1: ", Slides1.getPower());
         telemetry.addData("Slides2: ", Slides2.getPower());
+        telemetry.addData("Slides1 Position: ", Slides1.getCurrentPosition());
+        telemetry.addData("Slides2 Position : ", Slides2.getCurrentPosition());
+
 
 
         telemetry.addData("Elbow1: ", Elbow1.getPosition());
@@ -243,6 +300,50 @@ public class SeniorTeamTele extends OpMode
         telemetry.update();
 
 
-
     }
+    private void linearup(double inch, double power)
+    {
+        int a = (int) (Slides1.getCurrentPosition() - (inch*cpi));
+        int b = (int) (Slides2.getCurrentPosition() + (inch*cpi));
+        Slides1.setTargetPosition(a);
+        Slides2.setTargetPosition(b);
+        Slides1.setPower(power);
+        Slides2.setPower(power);
+        Slides1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Slides2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (Slides2.isBusy())
+        {
+            telemetry.addLine("Linear up");
+            telemetry.addData("Target Slides1", "%7d", a);
+            telemetry.addData("Target Slides2", "%7d", b);
+            telemetry.addData("Actual Slides1", "%7d", Slides1.getCurrentPosition());
+            telemetry.addData("Actual Slides2", "%7d", Slides2.getCurrentPosition());
+            telemetry.update();
+        }
+        //Slides1.setPower(0);
+        //Slides2.setPower(0);
+    }
+    private void lineardown(double inch, double power)
+    {
+        int a = (int) (Slides1.getCurrentPosition() + (inch * cpi));
+        int b = (int) (Slides2.getCurrentPosition() - (inch * cpi));
+        Slides1.setTargetPosition(a);
+        Slides2.setTargetPosition(b);
+        Slides1.setPower(power);
+        Slides2.setPower(power);
+        Slides1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Slides2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (Slides1.isBusy() && Slides2.isBusy()) {
+            telemetry.addLine("Linear down");
+            telemetry.addData("Target", "%7d", a);
+            telemetry.addData("Target", "%7d", b);
+            telemetry.addData("Actual", "%7d", Slides1.getCurrentPosition());
+            telemetry.addData("Actual", "%7d", Slides2.getCurrentPosition());
+            telemetry.update();
+        }
+        Slides1.setPower(0);
+        Slides2.setPower(0);
+    }
+
+
 }
