@@ -67,10 +67,14 @@ public class SeniorTeamTele extends OpMode
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        /*
+
         Slides1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Slides1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Slides2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Slides2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+*/
+
 
 
 
@@ -86,7 +90,7 @@ public class SeniorTeamTele extends OpMode
         //TopWrist.setPosition(-1);
         Elbow1.setPosition(1);
         Elbow2.setPosition(0);
-        SClaw.setPosition(0.6);
+        SClaw.setPosition(0);
 
         //elbow1 and elbow2 are continous servos
         //left servo is 0 and right servo is -0.5
@@ -184,7 +188,7 @@ public class SeniorTeamTele extends OpMode
             SClaw.setPosition(0);
         }
         if(gamepad2.x){
-            SClaw.setPosition(0.6);
+            SClaw.setPosition(0.5);
         }
 
         if (gamepad2.left_trigger > 0.5)
@@ -209,10 +213,10 @@ public class SeniorTeamTele extends OpMode
             Slides1.setPower(0);
             Slides2.setPower(0);
         }
-//        if(gamepad1.right_bumper){
-//            Slides1.setPower(0.9);
-//            Slides2.setPower(0.9);
-//        }
+        if(gamepad1.right_bumper){
+            Slides1.setPower(0.9);
+           Slides2.setPower(-0.9);
+        }
 
         /*
 
@@ -240,11 +244,24 @@ public class SeniorTeamTele extends OpMode
 
 */
 
+        //slides1: -2150 & 2150
+
+/*
         if (gamepad2.dpad_up) {
             linearup(43, 0.3);
+            if(Slides1.getCurrentPosition()<-2149 && Slides2.getCurrentPosition()>2149){
+                Slides1.setPower(0);
+                Slides2.setPower(0);
+            }
+        }
+        if (gamepad2.dpad_down) {
+            linearup(4, -0.3);
         }
 
+ */
 
+
+/*
         if (gamepad1.x) {
             SClaw.setPosition(0.6);
             linearup(4, 0.3);
@@ -253,14 +270,32 @@ public class SeniorTeamTele extends OpMode
 
         }
 
+ */
+
 
         if (gamepad2.dpad_down) {
-            lineardown(4, -0.3);
-            SClaw.setPosition(0);
-            lineardown(36,-0.3);
-            Slides1.setPower(0);
-            Slides2.setPower(0);
+            Slides1.setPower(0.55);
+            Slides2.setPower(-0.55);
         }
+        if (gamepad2.dpad_up) {
+            Slides1.setPower(-0.55);
+            Slides2.setPower(0.55);
+        }
+
+
+
+        /*
+        if(gamepad2.dpad_down){
+            Slides1.setPower(-0.55);
+            Slides2.setPower(0.55);
+        }
+
+        if(gamepad2.dpad_up){
+            Slides1.setPower(0.55);
+            Slides2.setPower(-0.55);
+        }
+
+         */
 
 
 
@@ -341,8 +376,12 @@ public class SeniorTeamTele extends OpMode
             telemetry.addData("Actual", "%7d", Slides2.getCurrentPosition());
             telemetry.update();
         }
-        Slides1.setPower(0);
-        Slides2.setPower(0);
+        Slides1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the motor encoder
+        Slides1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Slides2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the motor encoder
+        Slides2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Slides1.setPower(0.3);
+        Slides2.setPower(-0.3);
     }
 
 
