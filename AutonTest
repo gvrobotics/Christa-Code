@@ -12,16 +12,15 @@ import java.lang.Math;
 public class AutonTest extends LinearOpMode {
 
     public DcMotor FR, FL, BR, BL, Slides1, Slides2;
-    private double powerRY, powerRX, powerLX, powerLY, robotAngle, PowerMultiplier, lf, rb, rf, lb;
-    public CRServo Roller;
-    public Servo Elbow1, Elbow2, EWrist1, Wrist, TopWrist, SClaw;
+
+    public Servo SClaw, Wrist;
 
     //CPI is calculated by ((Clicks of Encoders per revolution)/(diameter*pi)
     //Clicks of Encoders per revolution may change based off of different model types
 
     // TEST THESE VALUES!!
 //    double cpi = 7; // cycles per inch
-    double cpi = 20; // cpi is being tested!!
+    double cpi = 60; // cpi is being tested!!
     double cpd = 7; // clicks per degree
     //double acpi = 10; // cpi for arm- verify number
 
@@ -40,9 +39,7 @@ public class AutonTest extends LinearOpMode {
         BL = hardwareMap.get(DcMotor.class, "BL");
         Slides1 = hardwareMap.get(DcMotor.class, "Slides1");
         Slides2 = hardwareMap.get(DcMotor.class, "Slides2");
-        Elbow1 = hardwareMap.get(Servo.class, "Elbow1");
-        Elbow2 = hardwareMap.get(Servo.class, "Elbow2");
-        Roller = hardwareMap.get(CRServo.class, "Roller");
+
         //TopWrist = hardwareMap.get(Servo.class, "TopWrist");
         // EWrist1 = hardwareMap.get(Servo.class, "EWrist1");
         Wrist = hardwareMap.get(Servo.class, "Wrist");
@@ -81,11 +78,14 @@ public class AutonTest extends LinearOpMode {
 
         FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        /*
 
         Slides1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Slides1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Slides2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Slides2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+         */
 
         // set initial power/position
         FR.setPower(0);
@@ -96,10 +96,7 @@ public class AutonTest extends LinearOpMode {
         Slides2.setPower(0);
         //EWrist1.setPosition(0.7);
         Wrist.setPosition(0.3);
-        Roller.setPower(0);
         //TopWrist.setPosition(-1);
-        Elbow1.setPosition(1);
-        Elbow2.setPosition(0);
         SClaw.setPosition(0.6);
 
         //motor powers:
@@ -109,7 +106,7 @@ public class AutonTest extends LinearOpMode {
 
         waitForStart();
         //TODO: Code Here!
-        backward(23, 0.1);
+        strafeLeft(5, 0.1);
         sleep(1000);
         //forward(23,0.1);
         /*
@@ -129,15 +126,15 @@ public class AutonTest extends LinearOpMode {
 
     private void forward(double inch,  double power) {
         // calculate new position for (wheel) motors
-        int a = (int)(BR.getCurrentPosition() + (inch * cpi));
-        int b = (int)(BL.getCurrentPosition() + (inch * cpi));
-        int c = (int)(FR.getCurrentPosition() + (inch * cpi));
-        int d = (int)(FL.getCurrentPosition() + (inch * cpi));
+        int a = (int)(BR.getCurrentPosition() - (inch * cpi));
+        int b = (int)(BL.getCurrentPosition() - (inch * cpi));
+        int c = (int)(FR.getCurrentPosition() - (inch * cpi));
+        int d = (int)(FL.getCurrentPosition() - (inch * cpi));
 
         // sets new position for motors
         BR.setTargetPosition(a);
         BL.setTargetPosition(b);
-        FL.setTargetPosition(c);
+        FL.setTargetPosition(c);                                                               ;
         FR.setTargetPosition(d);
 
         // sets desired power for motors
@@ -434,8 +431,8 @@ public class AutonTest extends LinearOpMode {
             telemetry.addData("Actual", "%7d", Slides2.getCurrentPosition());
             telemetry.update();
         }
-        Slides1.setPower(0);
-        Slides2.setPower(0);
-    }
+//        Slides1.setPower(0);
+//        Slides2.setPower(0);
+   }
 
 }   // end class
