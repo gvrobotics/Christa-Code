@@ -1,70 +1,61 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import java.lang.Math;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 
 @Autonomous
+public class AutonTest extends LinearOpMode
+{
+    public DcMotor BR, BL, FR, FL;
 
-public class AutonTest extends LinearOpMode {
 
-    public DcMotor FR, FL, BR, BL, Slides1, Slides2;
-
-    public Servo SClaw, Wrist;
-
+    // NOTE TO HOP: verify values
     //CPI is calculated by ((Clicks of Encoders per revolution)/(diameter*pi)
-    //Clicks of Encoders per revolution may change based off of different model types
-
-    // TEST THESE VALUES!!
-//    double cpi = 7; // cycles per inch
-    double cpi = 60; // cpi is being tested!!
-    double cpd = 7; // clicks per degree
-    //double acpi = 10; // cpi for arm- verify number
+    double cpi = 60;
 
     public enum robotMotion
     {
-        right, left, linearup, lineardown;
+        right, left, armUp, armDown;
     }
 
+
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() throws InterruptedException
+    {
+
 
         // hardware map
-        FR = hardwareMap.get(DcMotor.class, "FR");
-        FL = hardwareMap.get(DcMotor.class, "FL");
         BR = hardwareMap.get(DcMotor.class, "BR");
         BL = hardwareMap.get(DcMotor.class, "BL");
-        Slides1 = hardwareMap.get(DcMotor.class, "Slides1");
-        Slides2 = hardwareMap.get(DcMotor.class, "Slides2");
+        FR = hardwareMap.get(DcMotor.class, "FR");
+        FL = hardwareMap.get(DcMotor.class, "FL");
+        //Arm = hardwareMap.get(DcMotor.class, "Arm");
 
-        //TopWrist = hardwareMap.get(Servo.class, "TopWrist");
-        // EWrist1 = hardwareMap.get(Servo.class, "EWrist1");
-        Wrist = hardwareMap.get(Servo.class, "Wrist");
-        SClaw = hardwareMap.get(Servo.class, "SClaw");
 
-        /*
+        // set direction
         BR.setDirection(DcMotorSimple.Direction.FORWARD);
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
         FR.setDirection(DcMotorSimple.Direction.FORWARD);
-        FL.setDirection(DcMotorSimple.Direction.FORWARD);
-
-         */
-        BR.setDirection(DcMotorSimple.Direction.REVERSE);
-        BL.setDirection(DcMotorSimple.Direction.FORWARD);
-        FR.setDirection(DcMotorSimple.Direction.REVERSE);
         FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        // Arm.setDirection() (tbd)
 
-        Slides1.setDirection(DcMotorSimple.Direction.FORWARD);
-        Slides2.setDirection(DcMotorSimple.Direction.FORWARD);
-        SClaw.setDirection(Servo.Direction.REVERSE);
 
         // set mode
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+
+
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+
+
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -78,361 +69,295 @@ public class AutonTest extends LinearOpMode {
 
         FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        /*
 
-        Slides1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Slides1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Slides2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Slides2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-         */
+
+
+
+        // Arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+
 
         // set initial power/position
         FR.setPower(0);
         FL.setPower(0);
         BR.setPower(0);
         BL.setPower(0);
-        Slides1.setPower(0);
-        Slides2.setPower(0);
-        //EWrist1.setPosition(0.7);
-        Wrist.setPosition(0.3);
-        //TopWrist.setPosition(-1);
-        SClaw.setPosition(0.6);
+        // Arm.setPower(0);
 
-        //motor powers:
-        //forward/backward: 0.5
-        //strafe: 0.5
-        //right/left: 0.3
 
+        /* AUTON */
+
+        // REVIEW - CHANGED BY GREEN LEMONS
         waitForStart();
-        //TODO: Code Here!
-        strafeLeft(5, 0.1);
-        sleep(1000);
-        //forward(23,0.1);
-        /*
-        sleep(1000);
-        linearup(36, 0.3);
-        sleep(500);
-        lineardown(4,0.3);
-        SClaw.setPosition(0);
-        sleep(1000);
-        backward(23,0.1);
-        //movementRL(robotMotion.left, 45,0.1);
-        /*
-
-
-         */
-    }
-
-    private void forward(double inch,  double power) {
-        // calculate new position for (wheel) motors
-        int a = (int)(BR.getCurrentPosition() - (inch * cpi));
-        int b = (int)(BL.getCurrentPosition() - (inch * cpi));
-        int c = (int)(FR.getCurrentPosition() - (inch * cpi));
-        int d = (int)(FL.getCurrentPosition() - (inch * cpi));
-
-        // sets new position for motors
-        BR.setTargetPosition(a);
-        BL.setTargetPosition(b);
-        FL.setTargetPosition(c);                                                               ;
-        FR.setTargetPosition(d);
-
-        // sets desired power for motors
-        BR.setPower(power);
-        BL.setPower(power);
-        FR.setPower(power);
-        FL.setPower(power);
-
-        // make motors run to position
-        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // loop to get telemetry while motors are running
-        while (BR.isBusy() && BL.isBusy() && FR.isBusy() && FL.isBusy()) {
-            telemetry.addLine("Forward");
-
-            telemetry.addData("BR Target", a);
-            telemetry.addData("BL Target", b);
-            telemetry.addData("FR Target", c);
-            telemetry.addData("FL Target", d);
-
-            telemetry.addData("BR Current", BR.getCurrentPosition());
-            telemetry.addData("BL Current", BL.getCurrentPosition());
-            telemetry.addData("FR Current", FR.getCurrentPosition());
-            telemetry.addData("FL Current", FL.getCurrentPosition());
-
-            telemetry.update();
-        }
-        // stop motors
-        BR.setPower(0);
-        BL.setPower(0);
-        FR.setPower(0);
-        FL.setPower(0);
-    }
-
-    private void backward(double inch,  double power) {
-        // calculate new position for (wheel) motors
-        int a = (int)(BR.getCurrentPosition() - (inch * cpi));
-        int b = (int)(BL.getCurrentPosition() - (inch * cpi));
-        int c = (int)(FR.getCurrentPosition() - (inch * cpi));
-        int d = (int)(FL.getCurrentPosition() - (inch * cpi));
-
-        // sets new position for motors
-        BR.setTargetPosition(a);
-        BL.setTargetPosition(b);
-        FR.setTargetPosition(c);
-        FL.setTargetPosition(d);
-
-        // sets desired power for motors
-        BR.setPower(power);
-        BL.setPower(power);
-        FR.setPower(power);
-        FL.setPower(power);
-
-        // make motors run to position
-        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // loop to get telemetry while motors are running
-        while (BR.isBusy() && BL.isBusy() && FR.isBusy() && FL.isBusy()) {
-            telemetry.addLine("Backward");
-
-            telemetry.addData("BR Target", a);
-            telemetry.addData("BL Target", b);
-            telemetry.addData("FR Target", c);
-            telemetry.addData("FL Target", d);
-
-            telemetry.addData("BR Current", BR.getCurrentPosition());
-            telemetry.addData("BL Current", BL.getCurrentPosition());
-            telemetry.addData("FR Current", FR.getCurrentPosition());
-            telemetry.addData("FL Current", FL.getCurrentPosition());
-
-            telemetry.update();
-        }
-        // stop motors
-        BR.setPower(0);
-        BL.setPower(0);
-        FR.setPower(0);
-        FL.setPower(0);
-    }
-
-    private void strafeLeft (double inch,  double power) {
-        // FL and BR go backward, FR and BL go forward
-        BR.setTargetPosition((int) (BR.getCurrentPosition() - (inch * cpi)));
-        BL.setTargetPosition((int) (BL.getCurrentPosition() + (inch * cpi)));
-        FR.setTargetPosition((int) (FR.getCurrentPosition() + (inch * cpi)));
-        FL.setTargetPosition((int) (FL.getCurrentPosition() - (inch * cpi)));
-
-        // sets desired power for motors
-        BR.setPower(-power);
-        BL.setPower(power);
-        FR.setPower(power);
-        FL.setPower(-power);
-
-        // make motors run to position
-        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // loop to get telemetry while motors are running
-        while (BR.isBusy() && BL.isBusy() && FR.isBusy() && FL.isBusy()) {
-            telemetry.addLine("Strafe Left");
-
-            telemetry.addData("BR Target", BR.getTargetPosition());
-            telemetry.addData("BL Target", BL.getTargetPosition());
-            telemetry.addData("FR Target", FR.getTargetPosition());
-            telemetry.addData("FL Target", FL.getTargetPosition());
-
-            telemetry.addData("BR Current", BR.getCurrentPosition());
-            telemetry.addData("BL Current", BL.getCurrentPosition());
-            telemetry.addData("FR Current", FR.getCurrentPosition());
-            telemetry.addData("FL Current", FL.getCurrentPosition());
-
-            telemetry.update();
-        }
-        // stop motors
-        BR.setPower(0);
-        BL.setPower(0);
-        FR.setPower(0);
-        FL.setPower(0);
-    }
-
-    private void strafeRight (double inch,  double power) {
-        // FR and BL go backward, FL and BR go forward
-        BR.setTargetPosition((int) (BR.getCurrentPosition() + (inch * cpi)));
-        BL.setTargetPosition((int) (BL.getCurrentPosition() - (inch * cpi)));
-        FR.setTargetPosition((int) (FR.getCurrentPosition() - (inch * cpi)));
-        FL.setTargetPosition((int) (FL.getCurrentPosition() + (inch * cpi)));
-
-        // sets desired power for motors
-        BR.setPower(power);
-        BL.setPower(-power);
-        FR.setPower(-power);
-        FL.setPower(power);
-
-        // make motors run to position
-        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        // loop to get telemetry while motors are running
-        while (BR.isBusy() && BL.isBusy() && FR.isBusy() && FL.isBusy()) {
-            telemetry.addLine("Strafe Right");
-
-            telemetry.addData("BR Target", BR.getTargetPosition());
-            telemetry.addData("BL Target", BL.getTargetPosition());
-            telemetry.addData("FR Target", FR.getTargetPosition());
-            telemetry.addData("FL Target", FL.getTargetPosition());
-
-            telemetry.addData("BR Current", BR.getCurrentPosition());
-            telemetry.addData("BL Current", BL.getCurrentPosition());
-            telemetry.addData("FR Current", FR.getCurrentPosition());
-            telemetry.addData("FL Current", FL.getCurrentPosition());
-
-            telemetry.update();
-        }
-        // stop motors
-        BR.setPower(0);
-        BL.setPower(0);
-        FR.setPower(0);
-        FL.setPower(0);
-    }
-
-    private void movementRL(robotMotion action, double degree,  double power) {
-
-        if(action == robotMotion.left) {
-            // left is moving backwards, right is moving forwards
-            BR.setTargetPosition((int) (BR.getCurrentPosition() + (degree * cpd)));
-            BL.setTargetPosition((int) (BL.getCurrentPosition() - (degree * cpd)));
-            FR.setTargetPosition((int) (FR.getCurrentPosition() + (degree * cpd)));
-            FL.setTargetPosition((int) (FL.getCurrentPosition() - (degree * cpd)));
-
-            // sets desired power for motors
-            BR.setPower(power);
-            BL.setPower(-power);
-            FR.setPower(power);
-            FL.setPower(-power);
-
-            // make motors run to position
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // loop to get telemetry while motors are running
-            while (BR.isBusy() && BL.isBusy() && FR.isBusy() && FL.isBusy()) {
-                telemetry.addLine("Turning Left");
-
-                telemetry.addData("BR Target", BR.getTargetPosition());
-                telemetry.addData("BL Target", BL.getTargetPosition());
-                telemetry.addData("FR Target", FR.getTargetPosition());
-                telemetry.addData("FL Target", FL.getTargetPosition());
-
-                telemetry.addData("BR Current", BR.getCurrentPosition());
-                telemetry.addData("BL Current", BL.getCurrentPosition());
-                telemetry.addData("FR Current", FR.getCurrentPosition());
-                telemetry.addData("FL Current", FL.getCurrentPosition());
-
-                telemetry.update();
-            }
-            // stop motors
-            BR.setPower(0);
-            BL.setPower(0);
-            FR.setPower(0);
-            FL.setPower(0);
-        }
-
-        if(action == robotMotion.right) {
-            // right is moving backwards, left is moving forwards
-            BR.setTargetPosition((int) (BR.getCurrentPosition() - (degree * cpd)));
-            BL.setTargetPosition((int) (BL.getCurrentPosition() + (degree * cpd)));
-            FR.setTargetPosition((int) (FR.getCurrentPosition() - (degree * cpd)));
-            FL.setTargetPosition((int) (FL.getCurrentPosition() + (degree * cpd)));
-
-            // sets desired power for motors
-            BR.setPower(-power);
-            BL.setPower(power);
-            FR.setPower(-power);
-            FL.setPower(power);
-
-            // make motors run to position
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // loop to get telemetry while motors are running
-            while (BR.isBusy() && BL.isBusy() && FR.isBusy() && FL.isBusy()) {
-                telemetry.addLine("Turning Right");
-
-                telemetry.addData("BR Target", BR.getTargetPosition());
-                telemetry.addData("BL Target", BL.getTargetPosition());
-                telemetry.addData("FR Target", FR.getTargetPosition());
-                telemetry.addData("FL Target", FL.getTargetPosition());
-
-                telemetry.addData("BR Current", BR.getCurrentPosition());
-                telemetry.addData("BL Current", BL.getCurrentPosition());
-                telemetry.addData("FR Current", FR.getCurrentPosition());
-                telemetry.addData("FL Current", FL.getCurrentPosition());
-
-                telemetry.update();
-            }
-            // stop motors
-            BR.setPower(0);
-            BL.setPower(0);
-            FR.setPower(0);
-            FL.setPower(0);
-        }
+       forward(5,0.3);
 
     }
-    private void linearup(double inch, double power)
+
+
+    private void forward(double inch,  double power)
     {
-        int a = (int) (Slides1.getCurrentPosition() - (inch*cpi));
-        int b = (int) (Slides2.getCurrentPosition() + (inch*cpi));
-        Slides1.setTargetPosition(a);
-        Slides2.setTargetPosition(b);
-        Slides1.setPower(power);
-        Slides2.setPower(power);
-        Slides1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Slides2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (Slides2.isBusy())
+        // calculate new position for (wheel) motors
+        // make sure you cast to int!
+        int a = (int)(FL.getCurrentPosition() + (inch * cpi));
+        int b = (int)(FR.getCurrentPosition() + (inch * cpi));
+        int c = (int)(BL.getCurrentPosition() + (inch * cpi));
+        int d = (int)(BR.getCurrentPosition() + (inch * cpi));
+
+
+        // sets new position for motors
+        FL.setTargetPosition(a);
+        FR.setTargetPosition(b);
+        BL.setTargetPosition(c);
+        BR.setTargetPosition(d);
+
+
+        // sets desired power for motors
+        // TODO: Do for each wheel motor
+        FL.setPower(power);
+        FR.setPower(power);
+        BL.setPower(power);
+        BR.setPower(power);
+
+
+        // sets motors to RUN_TO_POSITION
+        // TODO: Do for each wheel motor
+        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        //loop to run encoders method
+        while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())
         {
-            telemetry.addLine("Linear up");
-            telemetry.addData("Target Slides1", "%7d", a);
-            telemetry.addData("Target Slides2", "%7d", b);
-            telemetry.addData("Actual Slides1", "%7d", Slides1.getCurrentPosition());
-            telemetry.addData("Actual Slides2", "%7d", Slides2.getCurrentPosition());
-            telemetry.update();
-        }
-        //Slides1.setPower(0);
-        //Slides2.setPower(0);
-    }
-    private void lineardown(double inch, double power)
-    {
-        int a = (int) (Slides1.getCurrentPosition() + (inch * cpi));
-        int b = (int) (Slides2.getCurrentPosition() - (inch * cpi));
-        Slides1.setTargetPosition(a);
-        Slides2.setTargetPosition(b);
-        Slides1.setPower(power);
-        Slides2.setPower(power);
-        Slides1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Slides2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while (Slides1.isBusy() && Slides2.isBusy()) {
-            telemetry.addLine("Linear down");
-            telemetry.addData("Target", "%7d", a);
-            telemetry.addData("Target", "%7d", b);
-            telemetry.addData("Actual", "%7d", Slides1.getCurrentPosition());
-            telemetry.addData("Actual", "%7d", Slides2.getCurrentPosition());
-            telemetry.update();
-        }
-//        Slides1.setPower(0);
-//        Slides2.setPower(0);
-   }
+            // TODO: Add telemetry data here
+            telemetry.addData("FL Target", a);
+            telemetry.addData("FL Actual", FL.getCurrentPosition());
 
-}   // end class
+            telemetry.addData("FR Target", b);
+            telemetry.addData("FR Actual", FR.getCurrentPosition());
+
+            telemetry.addData("BL Target", c);
+            telemetry.addData("BL Actual", BL.getCurrentPosition());
+
+            telemetry.addData("BR Target", d);
+            telemetry.addData("BR Actual", BR.getCurrentPosition());
+
+            telemetry.update();
+        }
+
+
+        // stop motors
+        FL.setPower(0);
+        FR.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+
+
+
+
+    }
+
+
+    private void backward(double inch,  double power)
+    {
+        // calculate new position for motors
+        int a = (int)(FL.getCurrentPosition() - (inch * cpi));
+        int b = (int)(FR.getCurrentPosition() - (inch * cpi));
+        int c = (int)(BL.getCurrentPosition() - (inch * cpi));
+        int d = (int)(BR.getCurrentPosition() - (inch * cpi));
+
+
+        // sets new position for motors
+        FL.setTargetPosition(-a);
+        FR.setTargetPosition(-b);
+        BL.setTargetPosition(-c);
+        BR.setTargetPosition(-d);
+
+
+        // sets desired power for motors
+        FL.setPower(power);
+        FR.setPower(power);
+        BL.setPower(power);
+        BR.setPower(power);
+
+
+        // make motors run to position
+        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        // loop to run encoders method
+        while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())
+        {
+            telemetry.addData("FL Target", a);
+            telemetry.addData("FL Actual", FL.getCurrentPosition());
+
+            telemetry.addData("FR Target", b);
+            telemetry.addData("FR Actual", FR.getCurrentPosition());
+
+            telemetry.addData("BL Target", c);
+            telemetry.addData("BL Actual", BL.getCurrentPosition());
+
+            telemetry.addData("BR Target", d);
+            telemetry.addData("BR Actual", BR.getCurrentPosition());
+
+            telemetry.update();
+
+        }
+
+        // stop motors
+        FL.setPower(0);
+        FR.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+
+
+    }
+
+
+
+    /*
+    private void movementRL(robotMotion action, double inch,  double power)
+    {
+
+
+        if(action == robotMotion.left)
+        {
+            // left is moving backwards, right is moving forwards
+            int a = (int)(FL.getCurrentPosition() - (inch * cpi));
+            int b = (int)(FR.getCurrentPosition() + (inch * cpi));
+            int c = (int)(BL.getCurrentPosition() - (inch * cpi));
+            int d = (int)(BR.getCurrentPosition() + (inch * cpi));
+
+
+            // sets new position for motors
+            FL.setTargetPosition(a);
+            FR.setTargetPosition(b);
+            BL.setTargetPosition(c);
+            BR.setTargetPosition(d);
+
+
+
+
+            // sets desired power for motors
+            FL.setPower(-power);
+            FR.setPower(power);
+            BL.setPower(-power);
+            BR.setPower(power);
+
+
+
+
+            // make motors run to position
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+
+
+            // loop to run encoders method
+            while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())
+            {
+                telemetry.addData("FL Target", a);
+                telemetry.addData("FL Actual", FL.getCurrentPosition());
+
+                telemetry.addData("FR Target", b);
+                telemetry.addData("FR Actual", FR.getCurrentPosition());
+
+                telemetry.addData("BL Target", c);
+                telemetry.addData("BL Actual", BL.getCurrentPosition());
+
+                telemetry.addData("BR Target", d);
+                telemetry.addData("BR Actual", BR.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+
+            // stop motors
+            FL.setPower(0);
+            FR.setPower(0);
+            BL.setPower(0);
+            BR.setPower(0);
+        }
+
+
+        if(action == robotMotion.right)
+        {
+            // calculates new position for motors
+            int a = (int)(FL.getCurrentPosition() + (inch * cpi));
+            int b = (int)(FR.getCurrentPosition() - (inch * cpi));
+            int c = (int)(BL.getCurrentPosition() + (inch * cpi));
+            int d = (int)(BR.getCurrentPosition() - (inch * cpi));
+
+
+
+
+            // sets new position for motors
+            FL.setTargetPosition(a);
+            FR.setTargetPosition(b);
+            BL.setTargetPosition(c);
+            BR.setTargetPosition(d);
+
+
+            // sets desired power for motors
+            FL.setPower(power);
+            FR.setPower(-power);
+            BL.setPower(power);
+            BR.setPower(-power);
+
+
+            // make motors run to position
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+            // loop to run encoders method
+            while (FL.isBusy() && FR.isBusy() && BL.isBusy() && BR.isBusy())
+            {
+                telemetry.addData("FL Target", a);
+                telemetry.addData("FL Actual", FL.getCurrentPosition());
+
+                telemetry.addData("FR Target", b);
+                telemetry.addData("FR Actual", FR.getCurrentPosition());
+
+                telemetry.addData("BL Target", c);
+                telemetry.addData("BL Actual", BL.getCurrentPosition());
+
+                telemetry.addData("BR Target", d);
+                telemetry.addData("BR Actual", BR.getCurrentPosition());
+
+                telemetry.update();
+            }
+
+
+            // stop motors
+            FL.setPower(0);
+            FR.setPower(0);
+            BL.setPower(0);
+            BR.setPower(0);
+        }
+
+
+    }
+*/
+    private void sleep(int sleep, double power)
+    {
+        BR.setPower(0);
+        FR.setPower(0);
+        BL.setPower(0);
+        FL.setPower(0);
+    }
+
+
+}
